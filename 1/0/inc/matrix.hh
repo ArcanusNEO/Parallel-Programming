@@ -10,7 +10,6 @@
 // 为了方便实现而采用memcpy和memset等低级函数处理T的值，所以一般而言仅支持内置类型的T
 template <typename T> class matrix_t {
 public:
-  matrix_t() noexcept { n = m = 0; }
   matrix_t(const matrix_t& other) noexcept { this->operator=(other); }
   matrix_t(matrix_t&& other) noexcept { this->swap(other); }
 
