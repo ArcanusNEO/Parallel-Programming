@@ -36,6 +36,7 @@ public:
   size_t row() const noexcept { return n; }
   size_t col() const noexcept { return m; }
 
+  // NOTE: 没有越界检查！！！
   T& operator()(size_t x, size_t y) { return arr[(x - 1) * m - 1 + y]; }
   T  operator()(size_t x, size_t y) const { return arr[(x - 1) * m - 1 + y]; }
 
