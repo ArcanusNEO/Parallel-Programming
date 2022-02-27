@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-signed main() {
+signed main(int argc, char* argv[]) {
   random_device            rd;
   mt19937                  mt(rd());
   uniform_int_distribution dist(0, 100);
@@ -10,9 +10,9 @@ signed main() {
   cout.tie(nullptr);
 #define endl '\n'
 
-  int n = 100;
-  // int n = 1000;
-  // int n = 10000;
+  int           n;
+  istringstream iss(argv[1]);
+  iss >> n;
   cout << n << endl;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) cout << dist(mt) << " ";
