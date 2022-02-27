@@ -36,7 +36,7 @@ public:
   }
 
   // NOTE: 会清空内容
-  size_t resize(size_t x = 0, size_t y = 0) noexcept {
+  size_t resize(size_t x, size_t y = 1) noexcept {
     if (n == x && m == y && n && m)
       std::memset(arr.get(), 0, n * m * sizeof(T));
     else {
@@ -53,15 +53,20 @@ public:
     arr.release();
   }
 
-  std::pair<size_t, size_t> size() const noexcept {
-    return std::make_pair(n, m);
-  }
+  size_t size() const noexcept { return n * m; }
   size_t row() const noexcept { return n; }
   size_t col() const noexcept { return m; }
 
+  // 读取引用
   // NOTE: 没有越界检查
-  T& operator()(size_t x, size_t y) { return arr[(x - 1) * m + y - 1]; }
-  T  operator()(size_t x, size_t y) const { return arr[(x - 1) * m + y - 1]; }
+  T& operator()(size_t x, size_t y = 1) {
+    return arr.get()[(x - 1) * m + y - 1];
+  }
+  // 读取值
+  // NOTE: 没有越界检查
+  T operator()(size_t x, size_t y = 1) const {
+    return arr.get()[(x - 1) * m + y - 1];
+  }
 
 protected:
   size_t n = 0, m = 0;
