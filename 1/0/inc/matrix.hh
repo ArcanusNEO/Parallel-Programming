@@ -53,9 +53,11 @@ public:
     arr.release();
   }
 
-  std::pair<size_t, size_t> size() const noexcept { return make_pair(n, m); }
-  size_t                    row() const noexcept { return n; }
-  size_t                    col() const noexcept { return m; }
+  std::pair<size_t, size_t> size() const noexcept {
+    return std::make_pair(n, m);
+  }
+  size_t row() const noexcept { return n; }
+  size_t col() const noexcept { return m; }
 
   // NOTE: 没有越界检查
   T& operator()(size_t x, size_t y) { return arr[(x - 1) * m + y - 1]; }
