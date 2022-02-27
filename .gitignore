@@ -102,8 +102,8 @@ ui_*.h
 *vcproj.*.*.user
 *.vcxproj
 *vcxproj.*
-.vscode/*
-!.vscode/launch.json
+/**/.vscode/*
+!/**/.vscode/launch.json
 *.x86_64
 
 ## Core latex/pdflatex auxiliary files:
