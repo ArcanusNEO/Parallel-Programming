@@ -6,7 +6,8 @@
 #include <memory>
 #include <string>
 
-// NOTE: 为了方便实现而采用memcpy复制T的值，所以一般而言仅支持内置类型的T
+// NOTE:
+// 为了方便实现而采用memcpy和memset等低级函数处理T的值，所以一般而言仅支持内置类型的T
 template <typename T> class matrix_t {
 public:
   matrix_t() noexcept { n = m = 0; }
@@ -17,9 +18,10 @@ public:
     if (n != other.n || m != other.m) {
       n = other.n;
       m = other.m;
-      arr.reset(new T[n * m]);
+      if (n && m) arr.reset(new T[n * m]);
+      else arr.release();
     }
-    if (n && m) std::memcpy(arr.get(), other.arr.get(), n * m);
+    if (n && m) std::memcpy(arr.get(), other.arr.get(), n * m * sizeof(T));
   }
   matrix_t& operator=(matrix_t&& other) noexcept {
     n = m = 0;
@@ -33,12 +35,31 @@ public:
     arr.swap(other.arr);
   }
 
-  size_t row() const noexcept { return n; }
-  size_t col() const noexcept { return m; }
+  // NOTE: 会清空内容
+  size_t resize(size_t x = 0, size_t y = 0) noexcept {
+    if (n == x && m == y && n && m)
+      std::memset(arr.get(), 0, n * m * sizeof(T));
+    else {
+      n = x;
+      m = y;
+      if (n && m) arr.reset(new T[n * m]());
+      else arr.release();
+    }
+    return n * m;
+  }
 
-  // NOTE: 没有越界检查！！！
-  T& operator()(size_t x, size_t y) { return arr[(x - 1) * m - 1 + y]; }
-  T  operator()(size_t x, size_t y) const { return arr[(x - 1) * m - 1 + y]; }
+  void clear() noexcept {
+    n = m = 0;
+    arr.release();
+  }
+
+  std::pair<size_t, size_t> size() const noexcept { return make_pair(n, m); }
+  size_t                    row() const noexcept { return n; }
+  size_t                    col() const noexcept { return m; }
+
+  // NOTE: 没有越界检查
+  T& operator()(size_t x, size_t y) { return arr[(x - 1) * m + y - 1]; }
+  T  operator()(size_t x, size_t y) const { return arr[(x - 1) * m + y - 1]; }
 
 protected:
   size_t n = 0, m = 0;
