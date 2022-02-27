@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/bin/vector-inner-product",
       "args": [
-        "<res/bench.in"
+        "<res/4000.in"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
