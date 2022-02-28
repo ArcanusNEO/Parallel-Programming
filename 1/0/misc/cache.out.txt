@@ -1,0 +1,8 @@
+file: 10.in result: 251949 repeat: 1000 avg-time: 1.21986e-06 s
+file: 100.in result: 26428063 repeat: 100 avg-time: 6.14251e-06 s
+file: 1000.in result: 2447074474 repeat: 10 avg-time: 0.000538012 s
+file: 2000.in result: 9883729955 repeat: 10 avg-time: 0.00204848 s
+file: 2500.in result: 15694140600 repeat: 5 avg-time: 0.00316068 s
+file: 3000.in result: 22391802701 repeat: 5 avg-time: 0.00460256 s
+file: 3500.in result: 30564586889 repeat: 5 avg-time: 0.00638182 s
+file: 4000.in result: 40132285151 repeat: 5 avg-time: 0.00833332 s
