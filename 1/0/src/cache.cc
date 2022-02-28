@@ -70,5 +70,6 @@ signed main(int argc, char* argv[]) {
     auto      avg_time = solve(ans, count);
     cout << "file: " << filename << " result: " << ans << " repeat: " << count
          << " avg-time: " << avg_time << " s" << endl;
+    ifs.close();
   }
 }
