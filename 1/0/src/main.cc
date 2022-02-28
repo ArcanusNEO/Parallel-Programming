@@ -1,4 +1,7 @@
 #include "main.hh"
+using namespace std;
+
+#define endl '\n'
 
 signed _main(int argc, char* argv[]) {
   ios_base::sync_with_stdio(false);
