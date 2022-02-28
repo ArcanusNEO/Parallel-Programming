@@ -21,9 +21,9 @@ double _solve(long long& ans, int T) {
 
   for (int _counter = 0; _counter < T; ++_counter) {
     ans     = 0;
-    auto t1 = chrono::steady_clock::now();
+    auto t1 = chrono::high_resolution_clock::now();
     func(ans, matrix, vec);
-    auto t2  = chrono::steady_clock::now();
+    auto t2  = chrono::high_resolution_clock::now();
     auto sec = chrono::duration_cast<chrono::duration<double>>(t2 - t1);
     ret += sec.count() / T;
   }
