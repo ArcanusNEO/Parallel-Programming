@@ -30,7 +30,7 @@
 运行测试方式：
 
 ```sh
-build/bin/ordinary conf/in.conf | tee misc/ordinary.out.txt
-build/bin/cache conf/in.conf | tee misc/cache.out.txt
+build/bin/ordinary conf/in.conf | sort | tee res/ordinary.out.txt
+build/bin/cache conf/in.conf | sort | tee res/cache.out.txt
 ```
 
