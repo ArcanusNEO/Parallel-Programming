@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-// NOTE:
+// NOTICE:
 // 为了方便实现而采用memcpy和memset等低级函数处理T的值，所以一般而言仅支持内置类型的T
 template <typename T> class matrix_t {
 public:
@@ -35,7 +35,7 @@ public:
     arr.swap(other.arr);
   }
 
-  // NOTE: 会清空内容
+  // NOTICE: 会清空内容
   size_t resize(size_t x, size_t y = 1) noexcept {
     if (n == x && m == y && n && m)
       std::memset(arr.get(), 0, n * m * sizeof(T));
@@ -58,12 +58,12 @@ public:
   size_t col() const noexcept { return m; }
 
   // 读取引用
-  // NOTE: 没有越界检查
+  // NOTICE: 没有越界检查
   T& operator()(size_t x, size_t y = 1) {
     return arr.get()[(x - 1) * m + y - 1];
   }
   // 读取值
-  // NOTE: 没有越界检查
+  // NOTICE: 没有越界检查
   T operator()(size_t x, size_t y = 1) const {
     return arr.get()[(x - 1) * m + y - 1];
   }
