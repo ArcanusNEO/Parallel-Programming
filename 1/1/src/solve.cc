@@ -1,7 +1,7 @@
 #include "solve.hh"
 using namespace std;
 
-double _solve(long long& ans, int T) {
+double _solve(int& ans, int T) {
   int    n;
   double ret = 0.0;
 

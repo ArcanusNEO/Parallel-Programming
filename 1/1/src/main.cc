@@ -33,8 +33,8 @@ signed _main(int argc, char* argv[]) {
     file          = path + filename;
     ifs.open(file);
     cin.rdbuf(ifs.rdbuf());
-    long long ans      = 0;
-    auto      avg_time = _solve(ans, count);
+    int  ans      = 0;
+    auto avg_time = _solve(ans, count);
     cout << "file: " << filename << " result: " << ans << " repeat: " << count
          << " avg-time: " << avg_time << " s" << endl;
     ifs.close();
