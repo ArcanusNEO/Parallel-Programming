@@ -10,4 +10,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 include_directories(inc)
 link_directories(lib)
 add_executable(${PROJECT_NAME} src/main.cc)
-
+add_executable(gen-data src/gen-data.cc)

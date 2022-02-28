@@ -1,5 +1,6 @@
 #include "main.hh"
 #include "solve.hh"
+using namespace std;
 
 template <typename T>
 void func(long long& ans, const matrix_t<T>& matrix, const matrix_t<T>& vec) {
