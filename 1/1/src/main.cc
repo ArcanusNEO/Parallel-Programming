@@ -35,6 +35,8 @@ signed _main(int argc, char* argv[]) {
     cin.rdbuf(ifs.rdbuf());
     int  ans      = 0;
     auto avg_time = _solve(ans, count);
+    cout.precision(12);
+    cout.setf(ios_base::fixed);
     cout << "file: " << filename << " result: " << ans << " repeat: " << count
          << " avg-time: " << avg_time << " s" << endl;
     ifs.close();
