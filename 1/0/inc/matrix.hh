@@ -23,11 +23,7 @@ public:
     }
     if (n && m) std::memcpy(arr.get(), other.arr.get(), n * m * sizeof(T));
   }
-  matrix_t& operator=(matrix_t&& other) noexcept {
-    n = m = 0;
-    arr.release();
-    this->swap(other);
-  }
+  matrix_t& operator=(matrix_t&& other) noexcept { this->swap(other); }
 
   void swap(matrix_t&& other) noexcept {
     std::swap(n, other.n);
