@@ -2,14 +2,16 @@
 #include "solve.hh"
 using namespace std;
 
-int recur(int arr[], int n) {
-  if (n <= 1) return *arr;
+void recur(int arr[], int n) {
+  if (n <= 1) return;
   int halfn = n >> 1;
-  return recur(arr, halfn) + recur(arr + halfn, halfn);
+  for (int i = 0; i < halfn; ++i) arr[i] += arr[halfn + i];
+  recur(arr, halfn);
 }
 
 void func(int& ans, int arr[], int n) {
-  ans = recur(arr, n);
+  recur(arr, n);
+  ans = arr[0];
 }
 
 signed main(int argc, char* argv[]) {
