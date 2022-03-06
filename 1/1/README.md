@@ -19,7 +19,7 @@
 
 - …
 
-- x86 架构下 Linux 中的一次测试结果保存在 `res/*-x86-linux.out.txt`
+- x86 架构下 Linux 中的一次测试结果保存在 `misc/*-x86-linux.out.txt`
 
 - 使用 chrono 计时库
 
@@ -28,5 +28,5 @@
 运行测试方式：
 
 ```sh
-build/bin/ordinary conf/in.conf | tee res/ordinary-x86-linux.out.txt
+build/bin/ordinary conf/in.conf | tee misc/ordinary-x86-linux.out.txt
 ```
