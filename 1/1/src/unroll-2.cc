@@ -2,7 +2,7 @@
 #include "solve.hh"
 using namespace std;
 
-void func(int& ans, const int arr[], int n) {
+void func(int& ans, int arr[], int n) {
   int sum0 = 0;
   int sum1 = 0;
   for (int i = 0; i < n; i += 2) {
