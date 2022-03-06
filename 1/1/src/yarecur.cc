@@ -6,7 +6,7 @@ void recur(int arr[], int n) {
 BEGIN:
   if (n <= 1) return;
   int halfn = n >> 1;
-  for (int i = 0; i < halfn; ++i) arr[i] += arr[n - i - 1];
+  for (int i = 0; i < halfn; ++i) arr[i] += arr[halfn + i];
   // recur(arr, halfn);
   // 尾递归等价于：
   n = halfn;

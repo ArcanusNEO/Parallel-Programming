@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "solve.hh"
 using namespace std;
 
@@ -7,10 +9,15 @@ double _solve(int& ans, int T) {
 
   cin >> n;
   auto arr = new int[n];
+  auto bak = new int[n];
 
-  for (int i = 0; i < n; ++i) cin >> arr[i];
+  for (int i = 0; i < n; ++i) {
+    cin >> arr[i];
+    bak[i] = arr[i];
+  }
   for (int _counter = 0; _counter < T; ++_counter) {
-    ans     = 0;
+    ans = 0;
+    memcpy(arr, bak, sizeof(int) * n);
     auto t1 = chrono::high_resolution_clock::now();
     func(ans, arr, n);
     auto t2  = chrono::high_resolution_clock::now();
@@ -18,5 +25,6 @@ double _solve(int& ans, int T) {
     ret += sec.count() / T;
   }
   delete[] arr;
+  delete[] bak;
   return ret;
 }
