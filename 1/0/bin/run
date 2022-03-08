@@ -1,3 +1,3 @@
 #!/bin/sh
-sudo perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.out.txt
-sudo perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/cache.perf build/bin/cache conf/in.conf | tee misc/cache.out.txt
+sudo perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -ag -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.out.txt
+sudo perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -ag -o misc/cache.perf build/bin/cache conf/in.conf | tee misc/cache.out.txt
