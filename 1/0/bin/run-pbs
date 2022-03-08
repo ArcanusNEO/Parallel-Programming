@@ -1,0 +1,9 @@
+#!/bin/sh
+perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.out.txt
+perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/cache.perf build/bin/cache conf/in.conf | tee misc/cache.out.txt
+
+# PBS -N vector
+# PBS -l nodes=1
+pssh -h $PBS_NODEFILE mkdir -p /home/s2013280/vector 1>&2
+pscp -h $PBS_NODEFILE /home/s2013280/vector/mpihelloworld /home/s2013280/vector 1>&2
+mpiexec -np 4 -machinefile $PBS_NODEFILE /home/s2013280/vector/mpihelloworld
