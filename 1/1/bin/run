@@ -1,0 +1,6 @@
+#!/bin/sh
+perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.perf
+perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.perf
+perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.perf
+perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.perf
+perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-prefetches -g -o misc/ordinary.perf build/bin/ordinary conf/in.conf | tee misc/ordinary.perf
