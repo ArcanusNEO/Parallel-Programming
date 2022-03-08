@@ -3,5 +3,5 @@
 # PBS -l nodes=1
 pssh -h $PBS_NODEFILE rm -rf /home/s2013280/vector 1>&2
 pscp -r -h $PBS_NODEFILE /home/s2013280/vector /home/s2013280/ 1>&2
-mpiexec -np 1 -machinefile $PBS_NODEFILE /home/s2013280/vector/build/bin/ordinary /home/s2013280/vector/conf/in.conf &>/home/s2013280/vector/misc/ordinary.out.txt
-mpiexec -np 1 -machinefile $PBS_NODEFILE /home/s2013280/vector/build/bin/cache /home/s2013280/vector/conf/in.conf &>/home/s2013280/vector/misc/cache.out.txt
+mpiexec -np 1 -machinefile $PBS_NODEFILE /home/s2013280/vector/build/bin/ordinary /home/s2013280/vector/conf/in.conf
+mpiexec -np 1 -machinefile $PBS_NODEFILE /home/s2013280/vector/build/bin/cache /home/s2013280/vector/conf/in.conf
