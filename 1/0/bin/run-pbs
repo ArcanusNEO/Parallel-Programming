@@ -3,7 +3,9 @@
 # PBS -l nodes=1
 pssh -h $PBS_NODEFILE rm -rf /home/s2013280/vector 1>&2
 pscp -r -h $PBS_NODEFILE /home/s2013280/vector /home/s2013280/ 1>&2
+echo '[ordinary]'
 /home/s2013280/vector/build/bin/ordinary /home/s2013280/vector/conf/in-pbs.conf
+echo '[cache]'
 /home/s2013280/vector/build/bin/cache /home/s2013280/vector/conf/in-pbs.conf
 # perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-stores -g -o /home/s2013280/vector/ordinary.perf /home/s2013280/vector/build/bin/ordinary /home/s2013280/vector/conf/in-pbs.conf
 # perf record -e L1-dcache-load-misses,L1-dcache-loads,L1-dcache-stores -g -o /home/s2013280/vector/cache.perf /home/s2013280/vector/build/bin/cache /home/s2013280/vector/conf/in-pbs.conf
