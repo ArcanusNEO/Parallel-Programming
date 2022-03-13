@@ -37,6 +37,8 @@ escapeinside=``
 \usepackage{multirow}
 \usepackage{footnote}
 \usepackage{booktabs}
+\usepackage{url}
+\usepackage{underscore}
 
 %-----------------------伪代码------------------
 \usepackage{algorithm}  
@@ -154,7 +156,23 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 \end{enumerate}
 
 \section{程序实现}
+源码链接：
+\url{https://github.com/ArcanusNEO/Parallel-Programming/tree/master/1/0}
+
 头文件位于 inc/，源文件位于 src/
+
+\begin{lstlisting}[title=逐列访问平凡算法,frame=trbl,language={C++}]
+  for (int i = 1; i <= matrix.col(); ++i)
+    for (int j = 1; j <= matrix.row(); ++j)
+      ans += (long long) matrix(j, i) * vec(i);
+\end{lstlisting}
+
+\begin{lstlisting}[title=cache 优化算法,frame=trbl,language={C++}]
+  for (int i = 1; i <= matrix.row(); ++i)
+    for (int j = 1; j <= matrix.col(); ++j)
+      ans += (long long) matrix(i, j) * vec(j);
+\end{lstlisting}
+
 \begin{itemize}
   \item 为了便于调整数据规模的同时保证数据分布紧凑，矩阵采用一维数组模拟，封装到 matrix_t 类中，使用 operator() 访问元素
   \item 使用 C++11 的 chrono::high_resolution_clock 高精度计时函数测量运行时间
@@ -163,12 +181,32 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
   \item 使用 cmake 构建
 \end{itemize}
 
-\section{测试数据}
-使用 gen-data 生成数据，规模 n 作为第一个参数传入，使用mt1937生成随机数。
+\section{实验平台配置}
+在华为鲲鹏arm平台部分参数如表 \ref{fig:1} 所示。
+\begin{table}[]
+  \centering
+  \begin{tabular}{l l}
+    \hline
+    CPU Maximum Frequency & 2600 MHz  \\   \hline
+    CPU Minimum Frequency & 200 MHz   \\   \hline
+    L1d 缓存              & 64 KiB    \\   \hline
+    L1i 缓存              & 64 KiB    \\   \hline
+    L2 缓存               & 512 KiB   \\   \hline
+    L3 缓存               & 49152 KiB \\   \hline
+    内存大小              & 191.3 GiB \\   \hline
+  \end{tabular}
+  \caption{鲲鹏服务器硬件配置信息}
+  \label{fig:1}
+\end{table}
 
-生成了一组测试文件位于res/，文件名形如 n.in
+\section{测试数据}
+使用 gen-data 生成数据，规模 n 作为第一个参数传入，使用 mt1937 生成随机数。
+
+生成了一组测试文件位于 res/，文件名形如 n.in
 
 使用 conf/in.conf 配置输入数据路径和重复测试次数，其路径作为待测程序的第一个参数传入。
+
+\section{}
 
 \newpage
 
