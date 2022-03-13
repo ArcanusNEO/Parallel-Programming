@@ -1,0 +1,33 @@
+file: 1024.in result: 664 repeat: 16384 avg-time: 0.000000685154 s
+file: 1048576.in result: -118746 repeat: 16 avg-time: 0.000282492250 s
+file: 128.in result: 7 repeat: 131072 avg-time: 0.000000046384 s
+file: 131072.in result: 11005 repeat: 128 avg-time: 0.000028407477 s
+file: 16.in result: 169 repeat: 1048576 avg-time: 0.000000024064 s
+file: 16384.in result: 7992 repeat: 1024 avg-time: 0.000003534012 s
+file: 2048.in result: 57 repeat: 8192 avg-time: 0.000000461590 s
+file: 2097152.in result: -82194 repeat: 8 avg-time: 0.000610684500 s
+file: 256.in result: -1529 repeat: 65536 avg-time: 0.000000074792 s
+file: 262144.in result: -53583 repeat: 64 avg-time: 0.000056302141 s
+file: 32.in result: 142 repeat: 524288 avg-time: 0.000000026229 s
+file: 32768.in result: -15119 repeat: 512 avg-time: 0.000007284232 s
+file: 4096.in result: 231 repeat: 4096 avg-time: 0.000000909334 s
+file: 4194304.in result: 204457 repeat: 4 avg-time: 0.001132052500 s
+file: 512.in result: -543 repeat: 32768 avg-time: 0.000000134890 s
+file: 524288.in result: -36818 repeat: 32 avg-time: 0.000126357531 s
+file: 64.in result: -695 repeat: 262144 avg-time: 0.000000032635 s
+file: 65536.in result: 5204 repeat: 256 avg-time: 0.000014240168 s
+file: 8.in result: 153 repeat: 2097152 avg-time: 0.000000023389 s
+file: 8192.in result: -3194 repeat: 2048 avg-time: 0.000001807268 s
+file: 8388608.in result: -502820 repeat: 2 avg-time: 0.002054912000 s
+
+ Performance counter stats for 'build/bin/unroll-4 conf/in.conf':
+
+    10,761,770,380      instructions:u            #    2.56  insn per cycle         
+     4,211,151,999      cycles:u                                                    
+
+       1.045635686 seconds time elapsed
+
+       1.011379000 seconds user
+       0.031907000 seconds sys
+
+

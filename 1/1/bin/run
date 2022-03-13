@@ -1,7 +1,7 @@
 #!/bin/sh
-build/bin/ordinary conf/in.conf >misc/ordinary.out.txt
-build/bin/recur-eliminate conf/in.conf >misc/recur-eliminate.out.txt
-build/bin/recursion conf/in.conf >misc/recursion.out.txt
-build/bin/unroll-2 conf/in.conf >misc/unroll-2.out.txt
-build/bin/unroll-4 conf/in.conf >misc/unroll-4.out.txt
-build/bin/unroll-8 conf/in.conf >misc/unroll-8.out.txt
+perf stat -e instructions,cycles build/bin/ordinary conf/in.conf &>misc/ordinary.out.txt
+perf stat -e instructions,cycles build/bin/recur-eliminate conf/in.conf &>misc/recur-eliminate.out.txt
+perf stat -e instructions,cycles build/bin/recursion conf/in.conf &>misc/recursion.out.txt
+perf stat -e instructions,cycles build/bin/unroll-2 conf/in.conf &>misc/unroll-2.out.txt
+perf stat -e instructions,cycles build/bin/unroll-4 conf/in.conf &>misc/unroll-4.out.txt
+perf stat -e instructions,cycles build/bin/unroll-8 conf/in.conf &>misc/unroll-8.out.txt

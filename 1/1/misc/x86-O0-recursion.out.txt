@@ -1,0 +1,33 @@
+file: 1024.in result: 664 repeat: 16384 avg-time: 0.000000536241 s
+file: 1048576.in result: -118746 repeat: 16 avg-time: 0.000226808937 s
+file: 128.in result: 7 repeat: 131072 avg-time: 0.000000038465 s
+file: 131072.in result: 11005 repeat: 128 avg-time: 0.000015817750 s
+file: 16.in result: 169 repeat: 1048576 avg-time: 0.000000025727 s
+file: 16384.in result: 7992 repeat: 1024 avg-time: 0.000002001890 s
+file: 2048.in result: 57 repeat: 8192 avg-time: 0.000000293033 s
+file: 2097152.in result: -82194 repeat: 8 avg-time: 0.000629506500 s
+file: 256.in result: -1529 repeat: 65536 avg-time: 0.000000057116 s
+file: 262144.in result: -53583 repeat: 64 avg-time: 0.000031783891 s
+file: 32.in result: 142 repeat: 524288 avg-time: 0.000000026110 s
+file: 32768.in result: -15119 repeat: 512 avg-time: 0.000003966664 s
+file: 4096.in result: 231 repeat: 4096 avg-time: 0.000000546658 s
+file: 4194304.in result: 204457 repeat: 4 avg-time: 0.001544501750 s
+file: 512.in result: -543 repeat: 32768 avg-time: 0.000000090888 s
+file: 524288.in result: -36818 repeat: 32 avg-time: 0.000070265656 s
+file: 64.in result: -695 repeat: 262144 avg-time: 0.000000030310 s
+file: 65536.in result: 5204 repeat: 256 avg-time: 0.000007917043 s
+file: 8.in result: 153 repeat: 2097152 avg-time: 0.000000024038 s
+file: 8192.in result: -3194 repeat: 2048 avg-time: 0.000001030757 s
+file: 8388608.in result: -502820 repeat: 2 avg-time: 0.003478081000 s
+
+ Performance counter stats for 'build/bin/recursion conf/in.conf':
+
+    10,199,734,808      instructions:u            #    2.52  insn per cycle         
+     4,050,215,182      cycles:u                                                    
+
+       1.018584837 seconds time elapsed
+
+       0.991464000 seconds user
+       0.024922000 seconds sys
+
+

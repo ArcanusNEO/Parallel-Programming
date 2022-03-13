@@ -1,0 +1,33 @@
+file: 1024.in result: 664 repeat: 16384 avg-time: 0.000000168469 s
+file: 1048576.in result: -118746 repeat: 16 avg-time: 0.000248268812 s
+file: 128.in result: 7 repeat: 131072 avg-time: 0.000000041315 s
+file: 131072.in result: 11005 repeat: 128 avg-time: 0.000016715883 s
+file: 16.in result: 169 repeat: 1048576 avg-time: 0.000000025671 s
+file: 16384.in result: 7992 repeat: 1024 avg-time: 0.000002373620 s
+file: 2048.in result: 57 repeat: 8192 avg-time: 0.000000291144 s
+file: 2097152.in result: -82194 repeat: 8 avg-time: 0.000617823750 s
+file: 256.in result: -1529 repeat: 65536 avg-time: 0.000000059526 s
+file: 262144.in result: -53583 repeat: 64 avg-time: 0.000031801609 s
+file: 32.in result: 142 repeat: 524288 avg-time: 0.000000026916 s
+file: 32768.in result: -15119 repeat: 512 avg-time: 0.000003933451 s
+file: 4096.in result: 231 repeat: 4096 avg-time: 0.000000542890 s
+file: 4194304.in result: 204457 repeat: 4 avg-time: 0.001431223750 s
+file: 512.in result: -543 repeat: 32768 avg-time: 0.000000088840 s
+file: 524288.in result: -36818 repeat: 32 avg-time: 0.000075900500 s
+file: 64.in result: -695 repeat: 262144 avg-time: 0.000000030448 s
+file: 65536.in result: 5204 repeat: 256 avg-time: 0.000007928711 s
+file: 8.in result: 153 repeat: 2097152 avg-time: 0.000000023589 s
+file: 8192.in result: -3194 repeat: 2048 avg-time: 0.000001083998 s
+file: 8388608.in result: -502820 repeat: 2 avg-time: 0.003752353500 s
+
+ Performance counter stats for 'build/bin/recur-eliminate conf/in.conf':
+
+    10,199,735,619      instructions:u            #    2.43  insn per cycle         
+     4,196,741,554      cycles:u                                                    
+
+       1.016831253 seconds time elapsed
+
+       0.986323000 seconds user
+       0.026922000 seconds sys
+
+
