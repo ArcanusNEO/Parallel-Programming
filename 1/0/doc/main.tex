@@ -146,6 +146,30 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 \tableofcontents
 \newpage
 
+\section{问题}
+计算给定 n × n 矩阵的每一列与给定向量的内积，考虑两种算法设计思路：
+\begin{enumerate}
+  \item 逐列访问元素的平凡算法
+  \item cache 优化算法
+\end{enumerate}
+
+\section{程序实现}
+头文件位于 inc/，源文件位于 src/
+\begin{itemize}
+  \item 为了便于调整数据规模的同时保证数据分布紧凑，矩阵采用一维数组模拟，封装到 matrix_t 类中，使用 operator() 访问元素
+  \item 使用 C++11 的 chrono::high_resolution_clock 高精度计时函数测量运行时间
+  \item ordinary 采用逐列访问的平凡算法
+  \item cache 采用 cache 优化算法
+  \item 使用 cmake 构建
+\end{itemize}
+
+\section{测试数据}
+使用 gen-data 生成数据，规模 n 作为第一个参数传入，使用mt1937生成随机数。
+
+生成了一组测试文件位于res/，文件名形如 n.in
+
+使用 conf/in.conf 配置输入数据路径和重复测试次数，其路径作为待测程序的第一个参数传入。
+
 \newpage
 
 \section{参考文献}
