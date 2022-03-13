@@ -182,7 +182,6 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 \end{itemize}
 
 \section{实验平台配置}
-华为鲲鹏 arm 平台部分硬件参数如表 \ref{tab:arm-arch} 所示。
 \begin{table}[]
   \centering
   \begin{tabular}{ll}
@@ -195,13 +194,30 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
     L3 缓存               & 49152 KiB \\   \hline
     内存大小              & 191.3 GiB \\   \hline
   \end{tabular}
-  \caption{鲲鹏服务器硬件配置信息}
+  \caption{鲲鹏 arm 平台硬件配置信息}
   \label{tab:arm-arch}
 \end{table}
 
-arm 服务器系统环境为 4.14.0 内核的 openEuler，本次实验使用基于 clang 的华为 bisheng 编译器构建。
+\begin{table}[]
+  \centering
+  \begin{tabular}{ll}
+    \hline
+    型号                  & AMD Ryzen 7 4800HS with Radeon Graphics \\   \hline
+    CPU Maximum Frequency & 2900 MHz                                \\   \hline
+    CPU Minimum Frequency & 1400 MHz                                \\   \hline
+    L1d 缓存              & 256 KiB                                 \\   \hline
+    L1i 缓存              & 256 KiB                                 \\   \hline
+    L2 缓存               & 4 MiB                                   \\   \hline
+    L3 缓存               & 8 MiB                                   \\   \hline
+    内存大小              & 16 GiB                                  \\   \hline
+  \end{tabular}
+  \caption{本地 x86 平台硬件配置信息}
+  \label{tab:x86-arch}
+\end{table}
 
-本地 x86 系统环境为 5.16.14 内核的 Arch Linux，本次实验使用 GNU GCC 编译，并且使用 perf 进行性能测试。
+华为鲲鹏 arm 平台部分硬件参数如表 \ref{tab:arm-arch} 所示。arm 服务器系统环境为 4.14.0 内核的 openEuler，本次实验使用基于 clang 的华为 bisheng 编译器构建。
+
+本地 x86 平台部分硬件参数如表 \ref{tab:x86-arch} 所示。本地 x86 系统环境为 5.16.14 内核的 Arch Linux，本次实验使用 GNU GCC 编译，并且使用 perf 进行性能测试。
 
 \section{实验方案设计}
 \subsection{测试脚本}
