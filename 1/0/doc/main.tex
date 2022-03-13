@@ -332,6 +332,29 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 由表 \ref{tab:x86-test} 可以看到 cache 优化算法对于平凡算法的优势随着数据量增大而变大，大数据量下有近一倍的差距。
 
+\subsubsection{使用 perf + hotspot 分析 cache 命中率}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{perf-ord-hotspot-1.png}
+  \caption{平凡算法的总体 cache 命中率}
+  \label{pic:ord1}
+
+  \centering
+  \includegraphics[width=\textwidth]{perf-ord-hotspot-2.png}
+  \caption{平凡算法的 _solve 函数 cache 命中率}
+  \label{pic:ord2}
+
+  \centering
+  \includegraphics[width=\textwidth]{perf-cache-hotspot-1.png}
+  \caption{cache 优化算法的总体 cache 命中率}
+  \label{pic:cache1}
+
+  \centering
+  \includegraphics[width=\textwidth]{perf-cache-hotspot-2.png}
+  \caption{cache 优化算法的 _solve 函数 cache 命中率}
+  \label{pic:cache2}
+\end{figure}
+
 \newpage
 
 \section{参考文献}
