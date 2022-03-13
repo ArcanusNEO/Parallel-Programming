@@ -120,7 +120,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
     \vspace{20mm}
     \textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
     \textbf{\huge{\kaishu{并行程序设计第2.1次作业}}}\\[2.3cm]
-    \textbf{\Huge\textbf{\kaishu{矩阵与向量内积}}}
+    \textbf{\Huge\textbf{\kaishu{矩阵与向量内积的 cache 优化}}}
 
     \vspace{\fill}
 
@@ -224,7 +224,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 测试脚本位于 bin/，''run'' 是 x86 架构下的脚本，''run-pbs'' 是鲲鹏服务器平台的脚本
 
 \subsection{测试数据}
-使用 gen-data 生成数据，规模 n 作为第一个参数传入，使用 mt1937 生成随机数。
+使用 gen-data 生成数据，规模 n 作为第一个参数传入，使用 mt19937 生成随机数。
 
 生成了一组测试文件位于 res/，文件名形如 n.in
 
@@ -283,11 +283,8 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 对于 cache 优化算法的结论也类似。
 
 通过横向比较表 \ref{tab:arm-test} 两种算法可以得知，对于 O0 优化，两种算法性能差别不大，甚至 cache 优化算法在大数据量下处于劣势。
-
 在小数据量下，两种算法性能差别同样不大。
-
 在中等数据量下，各种优化等级 cache 优化算法相比于平凡算法都有些微的性能优势。
-
 在大数据量下，对于 O0 和 O1 优化，cache 优化算法相比于平凡算法处于劣势；
 对于 O2 和 O3 优化，cache 优化算法相比于平凡算法有1倍有余的性能提升。
 
@@ -295,7 +292,6 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 4 × 100 × 100 B < 64 KiB = L1d size < 4 × 200 × 200 B，
 所以在 n = 200 时矩阵大小突破了 L1d 缓存大小，相对于 n = 100 数据规模翻 4 倍，运行时间成 4 倍有余；
 而 n = 100 与 n = 50 相比，运行时间恰好大约成 4 倍。
-
 4 × 300 × 300 B < 512 KiB = L2 size < 4 × 400 × 400 B，
 所以在 n = 400 时矩阵大小突破了 L2 缓存大小，此时低优化级别下 cache 优化算法和平凡算法性能差别不大，而高优化级别下 cache 优化算法对比于平凡算法有较大性能优势。
 
@@ -395,13 +391,5 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 对于 cache 优化算法 x86 平台略有优势，而对于平凡算法则是 arm 表现更好。
 可能的原因是：本地 x86 的 L1、L2 缓存延迟相对更高，吞吐率相对更大，对于 cache 优化算法吞吐率优势得以发挥，对于平凡算法延迟劣势凸显。
-
-\newpage
-
-\section{参考文献}
-\cite{1}\cite{2}\cite{3}\cite{4}\cite{5}\cite{6}
-
-\bibliographystyle{plain}
-\bibliography{Parallel-Programming-0.bib}
 
 \end{document}
