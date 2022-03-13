@@ -182,7 +182,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 \end{itemize}
 
 \section{实验平台配置}
-在华为鲲鹏arm平台部分参数如表 \ref{fig:1} 所示。
+华为鲲鹏arm平台部分硬件参数如表 \ref{fig:1} 所示。
 \begin{table}[]
   \centering
   \begin{tabular}{l l}
@@ -199,14 +199,27 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
   \label{fig:1}
 \end{table}
 
-\section{测试数据}
+arm 服务器系统环境为 4.14.0 内核的 openEuler，本次实验使用基于 clang 的华为 bisheng 编译器构建。
+
+本地 x86 系统环境为 5.16.14 内核的 Arch Linux，本次实验使用 GNU GCC 编译，并且使用 perf 进行性能测试。
+
+\section{实验方案设计}
+\subsection{测试脚本}
+测试脚本位于 bin/，''run'' 是 x86 架构下的脚本，''run-pbs'' 是鲲鹏服务器平台的脚本
+
+\subsection{测试数据}
 使用 gen-data 生成数据，规模 n 作为第一个参数传入，使用 mt1937 生成随机数。
 
 生成了一组测试文件位于 res/，文件名形如 n.in
 
 使用 conf/in.conf 配置输入数据路径和重复测试次数，其路径作为待测程序的第一个参数传入。
 
-\section{}
+\subsection{测试方法}
+分别测试 ordinary 和 cache 两个程序。读入定义测试输入文件路径和重复测试遍数的配置文件以便自动完成测试。
+程序会向标准输出打印测试结果。
+
+\subsection{实验结果及分析}
+
 
 \newpage
 
