@@ -37,6 +37,8 @@ escapeinside=``
 \usepackage{multirow}
 \usepackage{footnote}
 \usepackage{booktabs}
+\usepackage{url}
+\usepackage{underscore}
 
 %-----------------------伪代码------------------
 \usepackage{algorithm}  
@@ -118,7 +120,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
     \vspace{20mm}
     \textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
     \textbf{\huge{\kaishu{并行程序设计第2.2次作业}}}\\[2.3cm]
-    \textbf{\Huge\textbf{\kaishu{数组求和}}}
+    \textbf{\Huge\textbf{\kaishu{数组求和性能优化}}}
 
     \vspace{\fill}
 
@@ -140,11 +142,165 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 \renewcommand{\contentsname}{目录}
 \cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
 
-
 % 生成目录
 \clearpage
 \tableofcontents
 \newpage
+
+\section{问题}
+计算 n 个数的和，考虑两种算法设计思路：
+\begin{enumerate}
+  \item 逐个累加的平凡算法（链式）
+  \item 超标量优化算法（指令级并行），如最简单的两路链式累加；再如递归算法——两两相加、中间结果再两两相加，依次类推，直至只剩下最终结果
+\end{enumerate}
+
+\section{程序实现}
+源码链接：
+\url{https://github.com/ArcanusNEO/Parallel-Programming/tree/master/1/1}
+
+头文件位于 inc/，源文件位于 src/
+
+\begin{lstlisting}[title=链式算法,frame=trbl,language={C++}]
+  for (int i = 0; i < n; ++i) ans += arr[i];
+\end{lstlisting}
+
+\begin{lstlisting}[title=2 路链式算法,frame=trbl,language={C++}]
+  int sum0 = 0;
+  int sum1 = 0;
+  for (int i = 0; i < n; i += 2) {
+    sum0 += arr[i];
+    sum1 += arr[i | 1];  // i + 1
+  }
+  ans = sum0 + sum1;
+\end{lstlisting}
+
+\begin{lstlisting}[title=4 路链式算法,frame=trbl,language={C++}]
+  int sum0 = 0;
+  int sum1 = 0;
+  int sum2 = 0;
+  int sum3 = 0;
+  for (int i = 0; i < n; i += 4) {
+    sum0 += arr[i];
+    sum1 += arr[i | 1];  // i + 1
+    sum2 += arr[i | 2];  // i + 2
+    sum3 += arr[i | 3];  // i + 3
+  }
+  ans = sum0 + sum1 + sum2 + sum3;
+\end{lstlisting}
+
+\begin{lstlisting}[title=8 路链式算法,frame=trbl,language={C++}]
+  int sum0 = 0;
+  int sum1 = 0;
+  int sum2 = 0;
+  int sum3 = 0;
+  int sum4 = 0;
+  int sum5 = 0;
+  int sum6 = 0;
+  int sum7 = 0;
+  for (int i = 0; i < n; i += 8) {
+    sum0 += arr[i];
+    sum1 += arr[i | 1];  // i + 1
+    sum2 += arr[i | 2];  // i + 2
+    sum3 += arr[i | 3];  // i + 3
+    sum4 += arr[i | 4];  // i + 4
+    sum5 += arr[i | 5];  // i + 5
+    sum6 += arr[i | 6];  // i + 6
+    sum7 += arr[i | 7];  // i + 7
+  }
+  ans = sum0 + sum1 + sum2 + sum3 + sum4 + sum5 + sum6 + sum7;
+\end{lstlisting}
+
+\begin{lstlisting}[title=递归算法,frame=trbl,language={C++}]
+  if (n <= 1) return;
+  int halfn = n >> 1;
+  for (int i = 0; i < halfn; ++i) arr[i] += arr[halfn + i];
+  recur(arr, halfn);
+\end{lstlisting}
+
+\begin{lstlisting}[title=手动消去尾递归算法,frame=trbl,language={C++}]
+  BEGIN:
+    if (n <= 1) return;
+    int halfn = n >> 1;
+    for (int i = 0; i < halfn; ++i) arr[i] += arr[halfn + i];
+    n = halfn;
+    goto BEGIN;
+\end{lstlisting}
+
+\begin{itemize}
+  \item 使用 C++11 的 chrono::high_resolution_clock 高精度计时函数测量运行时间
+  \item ordinary 采用链式求和的平凡算法
+  \item recursion 采用递归求和的算法
+  \item recur-eliminate 采用消除尾递归求和的算法
+  \item unroll-* 采用循环展开的算法
+  \item 使用 cmake 构建
+\end{itemize}
+
+\section{实验平台配置}
+\begin{table}[]
+  \centering
+  \begin{tabular}{ll}
+    \hline
+    CPU Maximum Frequency & 2600 MHz  \\   \hline
+    CPU Minimum Frequency & 200 MHz   \\   \hline
+    L1d 缓存              & 64 KiB    \\   \hline
+    L1i 缓存              & 64 KiB    \\   \hline
+    L2 缓存               & 512 KiB   \\   \hline
+    L3 缓存               & 49152 KiB \\   \hline
+    内存大小              & 191.3 GiB \\   \hline
+  \end{tabular}
+  \caption{鲲鹏 arm 平台硬件配置信息}
+  \label{tab:arm-arch}
+\end{table}
+
+\begin{table}[]
+  \centering
+  \begin{tabular}{ll}
+    \hline
+    CPU 型号              & AMD Ryzen 7 4800HS with Radeon Graphics \\   \hline
+    CPU Maximum Frequency & 2900 MHz                                \\   \hline
+    CPU Minimum Frequency & 1400 MHz                                \\   \hline
+    L1d 缓存              & 256 KiB                                 \\   \hline
+    L1i 缓存              & 256 KiB                                 \\   \hline
+    L2 缓存               & 4 MiB                                   \\   \hline
+    L3 缓存               & 8 MiB                                   \\   \hline
+    内存大小              & 16 GiB                                  \\   \hline
+  \end{tabular}
+  \caption{本地 x86 平台硬件配置信息}
+  \label{tab:x86-arch}
+\end{table}
+
+华为鲲鹏 arm 平台部分硬件参数如表 \ref{tab:arm-arch} 所示。arm 服务器系统环境为 4.14.0 内核的 openEuler，本次实验使用基于 clang 的华为 bisheng 编译器构建。
+
+本地 x86 平台部分硬件参数如表 \ref{tab:x86-arch} 所示。本地 x86 系统环境为 5.16.14 内核的 Arch Linux，本次实验使用 GNU GCC 编译，并且使用 perf 进行性能测试。
+
+\section{实验方案设计}
+\subsection{测试脚本}
+测试脚本位于 bin/，''run'' 是 x86 架构下的脚本，''run-pbs'' 是鲲鹏服务器平台的脚本
+
+\subsection{测试数据}
+使用 gen-data 生成数据，规模 n 作为第一个参数传入，使用 mt19937 生成随机数。
+
+生成了一组测试文件位于 res/，文件名形如 n.in
+
+使用 conf/in.conf 配置输入数据路径和重复测试次数，其路径作为待测程序的第一个参数传入。
+
+\subsection{测试方法}
+分别测试 ordinary、recursion、recur-eliminate、unroll-2、unroll-4、unroll-8 共 6 个程序。读入定义测试输入文件路径和重复测试遍数的配置文件以便自动完成测试。
+程序会向标准输出打印测试结果。
+
+\begin{lstlisting}[title=重复测试代码,frame=trbl,language={C++}]
+  for (int _counter = 0; _counter < T; ++_counter) {
+    ans = 0;
+    memcpy(arr, bak, sizeof(int) * n);
+    auto t1 = chrono::high_resolution_clock::now();
+    func(ans, arr, n);
+    auto t2  = chrono::high_resolution_clock::now();
+    auto sec = chrono::duration_cast<chrono::duration<double>>(t2 - t1);
+    ret += sec.count() / T;
+  }
+\end{lstlisting}
+
+\section{实验结果及分析}
 
 \newpage
 
