@@ -495,6 +495,20 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
   \label{tab:x86-O3-test}
 \end{table}
 
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|l|l|l|l|l|l|}
+      \hline
+         & ordinary & recur-eliminate & recursion & unroll-2 & unroll-4 & unroll-8 \\ \hline
+      O0 & 2.51     & 2.48            & 2.52      & 2.58     & 2.58     & 2.59     \\ \hline
+      O3 & 2.55     & 2.43            & 2.45      & 2.58     & 2.56     & 2.59     \\ \hline
+    \end{tabular}%
+  }
+  \caption{本地 AMD x86 平台 O0 和 O3 优化下的 IPC}
+  \label{tab:x86-ipc}
+\end{table}
+
 \newpage
 
 \section{参考文献}
