@@ -313,7 +313,7 @@ recursion ≈ recur-eliminate > ordinary 。而 3 种不同程度的循环展开
 对于中等数据量，3 种算法速度排序为 unroll-8 > unroll-4 > unroll-2，可以发现循环展开程度越大，加速效果越好。
 
 对于大数据量，3 种算法速度排序为 unroll-8 > unroll-2 > unroll-4，
-可能的原因是根据反汇编代码，unroll-2 和 unroll-4 使用 SIMD 加速，而 unroll-8 使用多发射并行加速。4 路链式算法的循环展开代码过长，容易造成 cache 失效，抵消了 SIMD 带来的性能增长。
+可能的原因是根据反汇编代码，unroll-2 和 unroll-4 使用 SIMD 加速，而 unroll-8 使用多发射并行加速。4 路链式算法的循环展开代码过长，包含大量数据搬运，容易造成 cache 失效，抵消了 SIMD 带来的性能增长。
 
 \begin{table}[]
   \centering
@@ -444,6 +444,16 @@ recursion ≈ recur-eliminate > ordinary 。而 3 种不同程度的循环展开
 \end{table}
 
 \subsection{本地 AMD x86 平台}
+对于小数据量，各种算法执行速度大致相同。
+
+对于中等数据量，纵向比较表 \ref{tab:x86-O0-test}、\ref{tab:x86-O3-test} 可以发现从 n = 1024 是一个反常数据，各种优化算法的执行时间大幅增加，而其他数据均表现一致：
+递归和递归消去算法表现最优，循环展开算法次之，随着展开次数增加效率增加，平凡算法最劣。
+
+对于大数据量，递归和递归消去算法和平凡算法逐渐表现一致，循环展开算法最佳，且随着展开次数增加效率增加。
+可能的原因是递归算法的数组访问跨度较大，递归额外开销增加导致效率下降，而循环展开对于大数据量优化效果好。
+
+对于 O0 表 \ref{tab:x86-O0-test} 和 O3 表 \ref{tab:x86-O3-test} 的对比，可以看到差异不大，和 arm 架构 O3 优化下运行结果（表 \ref{tab:arm-O3-test}）对比优势巨大，可能是由于运算简单，x86 架构 CPU 在 O0 下也可以自动进行多发射优化。
+
 \begin{table}[]
   \centering
   \resizebox{\textwidth}{!}{%
@@ -522,12 +532,6 @@ recursion ≈ recur-eliminate > ordinary 。而 3 种不同程度的循环展开
   \label{tab:x86-ipc}
 \end{table}
 
-\newpage
-
-\section{参考文献}
-\cite{1}\cite{2}\cite{3}\cite{4}\cite{5}\cite{6}
-
-\bibliographystyle{plain}
-\bibliography{Parallel-Programming-0.bib}
+由表 \ref{tab:x86-ipc} 可以发现，平凡算法的 IPC 并没有很低，可以认为是 CPU 执行期间的优化，而递归算法的 IPC 较低，可能是由于控制跳转语句过多造成的影响。
 
 \end{document}
