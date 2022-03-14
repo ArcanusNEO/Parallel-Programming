@@ -302,6 +302,19 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 \section{实验结果及分析}
 \subsection{鲲鹏 arm 平台}
+对于 O0、O1 低优化等级，横向比较表 \ref{tab:arm-O0-test}、\ref{tab:arm-O1-test} 可以发现，6 种算法速度排序为
+unroll-8 > unroll-4 > unroll-2 > recursion > recur-eliminate > ordinary 。
+
+对于 O2、O3 高优化等级，横向比较表 \ref{tab:arm-O2-test}、\ref{tab:arm-O3-test} 可以发现，前 3 种算法速度排序为
+recursion ≈ recur-eliminate > ordinary 。而 3 种不同程度的循环展开执行速度与数据规模有关。
+
+对于小数据量，3 种循环展开执行速度大致相同，优于递归算法，与平凡算法相近。可能的原因是小数据量的循环展开带来的并行收益不大，而递归算法的额外开销会造成性能损失。
+
+对于中等数据量，3 种算法速度排序为 unroll-8 > unroll-4 > unroll-2，可以发现循环展开程度越大，加速效果越好。
+
+对于大数据量，3 种算法速度排序为 unroll-8 > unroll-2 > unroll-4，
+可能的原因是根据反汇编代码，unroll-2 和 unroll-4 使用 SIMD 加速，而 unroll-8 使用多发射并行加速。4 路链式算法的循环展开代码过长，容易造成 cache 失效，抵消了 SIMD 带来的性能增长。
+
 \begin{table}[]
   \centering
   \resizebox{\textwidth}{!}{%
@@ -505,7 +518,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
       O3 & 2.55     & 2.43            & 2.45      & 2.58     & 2.56     & 2.59     \\ \hline
     \end{tabular}%
   }
-  \caption{本地 AMD x86 平台 O0 和 O3 优化下的 IPC}
+  \caption{perf 测试本地 AMD x86 平台 O0 和 O3 优化下的 IPC}
   \label{tab:x86-ipc}
 \end{table}
 
