@@ -140,7 +140,6 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 \renewcommand{\contentsname}{目录}
 \cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
 
-
 % 生成目录
 \clearpage
 \tableofcontents
@@ -150,14 +149,58 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 \section{背景知识}
 
+\subsection{普通高斯消去算法}
+
+\includegraphics[width=\textwidth]{gauss-alg.jpg}
+
+\begin{lstlisting}[title=普通高斯消去算法,frame=trbl,language={Pascal}]
+  procedure LU (A)
+  begin
+    for k := 1 to n do
+      for j := k + 1 to n do
+        A[k, j] := A[k, j] / A[k, k];
+      endfor;
+      A[k, k] := 1.0;
+      for i := k + 1 to n do
+        for j := k + 1 to n do
+          A[i, j] := A[i, j] - A[i, k] * A[k, j];
+        endfor;
+        A[i, k] := 0;
+      endfor;
+    endfor;
+  end LU
+\end{lstlisting}
+
+观察高斯消去算法，注意到伪代码第 4，5 行第一个内嵌循环中的
+A[k, j] := A[k, j] / A[k, k] 以及伪代码第 8、9、10 行双层 for 循环中的
+A[i, j] := A[i, j] - A[i, k] * A[k, j] 都是可以进行向量化的循环。可以通过
+SIMD 扩展指令对这两步进行并行优化。
+
+\subsection{数据结构}
+
+可采用位向量方式存储每个消元子和被消元行，优点是消元操作变为位向量异或操作，算法实现简单，且适合并行化，易达到更高的并行效率，缺点是 Gröbner 基计算中产生的消元子和被消元行非常稀疏，非零元素（ 1 元素）在 5 \% 以下，位向量存储和计算可能并非最优。
+也可采用类似倒排链表的存储及方式——可认为是稀疏 0 / 1 矩阵的紧凑存储方式，每个消元子和被消元行只保存1元素的位置，且按升序排列，从而类似倒排链表数据结构。优点是存储空间占用更少，缺点是算法设计更复杂，并行化难度高。
+
+\subsection{数据访问}
+
+矩阵规模可能非常庞大，达到数百万行 / 列，难以全部放入内存。此时，需要设计的是外存算法，考虑如何分批次将数据读入内存进行处理，同时又保证正确性。对外存算法，算法分析和时间测试除了考虑计算之外，还要考虑 I / O 时间。
+
+\subsection{并行化方法}
+
+\begin{enumerate}
+  \item 对位向量存储方式，两行间消元操作的并行化很直接，无论 SIMD、多线程还是 MPI、GPU，将向量拆分，子向量的异或即自然形成任务，可分配给不同的计算单元。当矩阵规模大到百万级别时，采取这种并行方式就够了。但当矩阵规模没有那么大时，一个消元操作计算量不足以支撑较大规模并行，就需要考虑消元操作间的并行,设计适合的并行任务划分，在提高并发度的同时保证正确性。
+  \item 对类倒排链表存储方式，可以考虑循环展开和多线程优化。
+  \item 当矩阵规模非常庞大，需使用外存算法时就要同时考虑计算和访存。多线程并行化时可考虑计算和访存异步模式，在前台线程进行消元计算时、后台线程读取下一步要处理的数据，这需要仔细设计计算和 I / O 步骤，降低依赖关系，以便实现异步模式。
+\end{enumerate}
+
 \section{研究计划}
 
 \newpage
 
 \section{参考文献}
-\cite{1}\cite{2}\cite{3}\cite{4}\cite{5}\cite{6}
+\cite{1}\cite{2}
 
 \bibliographystyle{plain}
-\bibliography{Parallel-Programming-0.bib}
+\bibliography{Parallel-Programming-2.bib}
 
 \end{document}
