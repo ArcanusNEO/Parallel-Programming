@@ -147,26 +147,36 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 \section{研究问题}
 
-\section{背景知识}
+\subsection{高斯消元法}
 
-\subsection{普通高斯消去算法}
+数学上，高斯消元法（或译：高斯消去法），是线性代数规划中的一个算法，可用来为线性方程组求解。但其算法十分复杂，不常用于加减消元法，求出矩阵的秩，以及求出可逆方阵的逆矩阵。不过，如果有过百万条等式时，这个算法会十分省时。一些极大的方程组通常会用迭代法以及花式消元来解决。当用于一个矩阵时，高斯消元法会产生出一个“行梯阵式”。高斯消元法可以用在计算机中来解决数千条等式及未知数。亦有一些方法特地用来解决一些有特别排列的系数的方程组。
+
+高斯消元法的算法复杂度是$O(n^3)$；这就是说，如果系数矩阵的是$n×n$，那么高斯消元法所需要的计算量大约与$n^3$成比例。
+
+高斯消元法可以用在电脑中来解决数千条等式及未知数。不过，如果有过百万条等式时，这个算法会十分费时。一些极大的方程组通常会用迭代法来解决。亦有一些方法特地用来解决一些有特别排列的系数的方程组。
+
+高斯消元法可用在任何域中。
+
+高斯消元法对于一些矩阵来说是稳定的。对于普遍的矩阵来说，高斯消元法在应用上通常也是稳定的，不过亦有例外。
+
+随着多核处理器的日益普及，现在我们可以利用线程级并行高斯消元算法来提高计算的速度。我们的研究也是基于消元子模式的高斯消元算法对并行优化进行探讨。
 
 \includegraphics[width=\textwidth]{gauss-alg.jpg}
 
 \begin{lstlisting}[title=普通高斯消去算法,frame=trbl,language={Pascal}]
   procedure LU (A)
   begin
-    for k := 1 to n do
-      for j := k + 1 to n do
-        A[k, j] := A[k, j] / A[k, k];
-      endfor;
-      A[k, k] := 1.0;
-      for i := k + 1 to n do
-        for j := k + 1 to n do
-          A[i, j] := A[i, j] - A[i, k] * A[k, j];
-        endfor;
-        A[i, k] := 0;
-      endfor;
+  for k := 1 to n do
+  for j := k + 1 to n do
+  A[k, j] := A[k, j] / A[k, k];
+  endfor;
+  A[k, k] := 1.0;
+  for i := k + 1 to n do
+  for j := k + 1 to n do
+  A[i, j] := A[i, j] - A[i, k] * A[k, j];
+  endfor;
+  A[i, k] := 0;
+  endfor;
     endfor;
   end LU
 \end{lstlisting}
@@ -175,6 +185,47 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 A[k, j] := A[k, j] / A[k, k] 以及伪代码第 8、9、10 行双层 for 循环中的
 A[i, j] := A[i, j] - A[i, k] * A[k, j] 都是可以进行向量化的循环。可以通过
 SIMD 扩展指令对这两步进行并行优化。
+
+\subsection{消元子模式的高斯消元算法}
+本算法源自布尔 Gröbner 基计算。
+Gröbner基理论是一种在国外被普遍认同的用于求解多变元高次方程系统的有效算法,其概念最早由Buchberger提出。其本质是从多项式环中任意理想的生成元出发,刻画和计算出一组具有“好的”性质的生成元,进而研究理想的结构并进行某些理想运算;由于数学、科学和工程学中的许多问题都可以用多元多项式方程组表示(例如,理想,模块和矩阵),Gröbner基的代数算法在理论物理学、应用科学和工程学中具有广泛的应用。
+在 HFE80 的 Gröbner 基计算过程中，高斯消元时间占比可以达到90\% 以上。考虑到此算法中高斯消元的特殊性，为加快高斯消元速度，设计此算法。
+\subsubsection{符号说明}
+$R$:所有消元子构成的集合
+
+$R[i]$：首项为 $i$ 的消元子
+
+$E$：所有被消元行构成的数组
+
+$E[i]$：第 $i$ 个被消元行
+
+$lp(E[i])$：被消元行第 $i$ 行的首项
+
+这里首项的含义：首项是指某行下标最大的非零项的下标，如某行为 011000，从左到右下标分别为 5,4,3,2,1,0，那么首项为 4，因为该行非零项下标为 3,4，其中最大值为 4。
+
+\subsubsection{算法伪代码}
+\begin{breakablealgorithm}
+  \caption{串行算法伪代码}
+  \begin{algorithmic}[1] %每行显示行号  
+    \Function {Gauss}{}
+    \For {$i:=0$\ \textbf{to}\ $m-1$}
+    \While {$E[i]!=0$}
+    \If{$R[lp(E[i])]!=NULL$}
+    \State $E[i]:=E[i]−R[lp(E[i])]$
+    \Else\State{$R[lp(E[i])]:=E[i]$}
+    \State\textbf{break}
+    \EndIf
+    \EndWhile
+    \EndFor
+    \State \Return{$E$}
+    \EndFunction
+  \end{algorithmic}
+\end{breakablealgorithm}
+
+其中外层循环表示遍历每个被消元行。内层循环表示针对每个被消元行，如果该行未被消为 0，那么根据其首项选择消元子进行消元；当存在合适的消元子，则用该消元子进行消元；否则将该被消元行作为消元子，参与后续高斯消元过程。
+并行算法内容由串行算法改进。
+
+\section{背景知识}
 
 \subsection{数据结构}
 
