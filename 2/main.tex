@@ -246,6 +246,13 @@ $lp(E[i])$：被消元行第 $i$ 行的首项
 
 \section{研究计划}
 
+本课题的研究由丁屹和卢麒萱共同完成，具体两人的分工如下：
+
+\begin{itemize}
+  \item 丁屹负责尝试将高斯消元算法在 arm 平台使用 SIMD、Pthread、OpenMPI 等框架加速，使用 NVIDIA 的 CUDA 框架加速，在各个平台运行测试并对结果进行性能分析对比。
+  \item 卢麒萱负责在本机 (Arch Linux x86) 平台实现普通的和特殊的串行高斯消元算法，使用 SIMD、Pthread、OpenMPI 等框架加速并提前测试，并编写测试代码、尝试结合多种加速方法。
+\end{itemize}
+
 \newpage
 
 \section{参考文献}
