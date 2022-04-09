@@ -37,7 +37,7 @@ signed _main(int argc, char* argv[]) {
     auto avg_time = _solve(ans, count);
     cout.precision(12);
     cout.setf(ios_base::fixed);
-    cout << "file: " << filename << " result: " << ans << " repeat: " << count
+    cout << "file: " << filename << " repeat: " << count
          << " avg-time: " << avg_time << " s" << endl;
     ifs.close();
   }
