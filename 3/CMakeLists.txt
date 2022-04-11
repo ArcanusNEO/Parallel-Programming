@@ -21,6 +21,6 @@ add_library(main SHARED src/main.cc)
 add_library(solve SHARED src/solve.cc)
 add_executable(gen-data src/gen-data.cc)
 add_executable(ordinary src/ordinary.cc)
-# add_executable(arm-neon-all src/arm-neon-all.cc)`
+# add_executable(arm-neon-all src/arm-neon-all.cc)
 target_link_libraries(ordinary main solve)
 # target_link_libraries(arm-neon-all main solve)
