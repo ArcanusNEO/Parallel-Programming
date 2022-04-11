@@ -8,8 +8,8 @@ double _solve(int& ans, int T) {
   double ret = 0.0;
 
   cin >> n;
-  auto arr = new float[n * n];
-  auto bak = new float[n * n];
+  auto arr = (float*) aligned_alloc(32, n * n * sizeof(float));
+  auto bak = (float*) aligned_alloc(32, n * n * sizeof(float));
 
   for (int i = 0; i < n * n; ++i) cin >> bak[i];
   for (int _counter = 0; _counter < T; ++_counter) {
@@ -27,7 +27,7 @@ double _solve(int& ans, int T) {
   for (int i = 0; i < n; ++i)
     for (int j = 0; j < n; ++j) cout << matrix(i, j) << " \n"[j == n - 1];
 #undef matrix
-  delete[] arr;
-  delete[] bak;
+  free(arr);
+  free(bak);
   return ret;
 }

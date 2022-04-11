@@ -15,16 +15,17 @@ signed main(int argc, char* argv[]) {
   istringstream iss(argv[1]);
   iss >> n;
   cout << n << endl;
-  matrix_t<float> matrix(n, n);
-  for (int i = 1; i <= n; ++i) {
-    for (int j = 1; j < i; ++j) matrix(i, j) = 0;
-    matrix(i, i) = 1.0;
-    for (int j = i + 1; j <= n; ++j) matrix(i, j) = dist(mt);
-  }
-  for (int k = 1; k <= n; ++k)
-    for (int i = k + 1; i <= n; ++i)
-      for (int j = 1; j <= n; ++j) matrix(i, j) += matrix(k, j);
+  // matrix_t<float> matrix(n, n);
+  // for (int i = 1; i <= n; ++i) {
+  //   for (int j = 1; j < i; ++j) matrix(i, j) = 0;
+  //   matrix(i, i) = 1.0;
+  //   for (int j = i + 1; j <= n; ++j) matrix(i, j) = dist(mt);
+  // }
+  // for (int k = 1; k <= n; ++k)
+  //   for (int i = k + 1; i <= n; ++i)
+  //     for (int j = 1; j <= n; ++j) matrix(i, j) += matrix(k, j);
 
   for (int i = 1; i <= n; ++i)
-    for (int j = 1; j <= n; ++j) cout << matrix(i, j) << " \n"[j == n];
+    // for (int j = 1; j <= n; ++j) cout << matrix(i, j) << " \n"[j == n];
+    for (int j = 1; j <= n; ++j) cout << dist(mt) << " \n"[j == n];
 }
