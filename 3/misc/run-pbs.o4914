@@ -1,0 +1,33 @@
+[ordinary]
+file: 1024.in repeat: 5 avg-time: 0.135511226000 s
+file: 128.in repeat: 15 avg-time: 0.000231574000 s
+file: 16.in repeat: 50 avg-time: 0.000001666000 s
+file: 2048.in repeat: 3 avg-time: 1.101775523333 s
+file: 256.in repeat: 10 avg-time: 0.001820356000 s
+file: 32.in repeat: 50 avg-time: 0.000007127000 s
+file: 4096.in repeat: 1 avg-time: 13.088073440000 s
+file: 512.in repeat: 10 avg-time: 0.014974396000 s
+file: 64.in repeat: 20 avg-time: 0.000037566500 s
+file: 8.in repeat: 100 avg-time: 0.000000525400 s
+[arm-neon-aligned]
+file: 1024.in repeat: 5 avg-time: 0.137847262000 s
+file: 128.in repeat: 15 avg-time: 0.000275770000 s
+file: 16.in repeat: 50 avg-time: 0.000001401600 s
+file: 2048.in repeat: 3 avg-time: 1.093070066667 s
+file: 256.in repeat: 10 avg-time: 0.002021820000 s
+file: 32.in repeat: 50 avg-time: 0.000006609400 s
+file: 4096.in repeat: 1 avg-time: 14.540709080000 s
+file: 512.in repeat: 10 avg-time: 0.016449107000 s
+file: 64.in repeat: 20 avg-time: 0.000040106500 s
+file: 8.in repeat: 100 avg-time: 0.000000484900 s
+[arm-neon-unaligned]
+file: 1024.in repeat: 5 avg-time: 0.196087378000 s
+file: 128.in repeat: 15 avg-time: 0.000349447333 s
+file: 16.in repeat: 50 avg-time: 0.000001702000 s
+file: 2048.in repeat: 3 avg-time: 1.511987780000 s
+file: 256.in repeat: 10 avg-time: 0.002725389000 s
+file: 32.in repeat: 50 avg-time: 0.000008225000 s
+file: 4096.in repeat: 1 avg-time: 14.938220180000 s
+file: 512.in repeat: 10 avg-time: 0.021199319000 s
+file: 64.in repeat: 20 avg-time: 0.000051374500 s
+file: 8.in repeat: 100 avg-time: 0.000000541900 s
