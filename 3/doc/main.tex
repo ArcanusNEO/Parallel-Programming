@@ -1,0 +1,423 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {figures/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+\usepackage{lscape}
+
+%-----------------------伪代码------------------
+\usepackage{algorithm}  
+\usepackage{algorithmicx}  
+\usepackage{algpseudocode}  
+\floatname{algorithm}{Algorithm}  
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}  
+\renewcommand{\algorithmicensure}{\textbf{Output:}} 
+\usepackage{lipsum}  
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+  \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+      {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+      \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+      \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+      \fi
+      \kern2pt\hrule\kern2pt
+     }
+  }{% \end{breakablealgorithm}
+     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+  \end{center}
+  }
+\makeatother
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\appendixpagename}{附录}
+\renewcommand{\refname}{参考文献}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+    \textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+    \textbf{\huge{\kaishu{并行程序设计第 3 次作业}}}\\[2.3cm]
+    \textbf{\Huge\textbf{\kaishu{高斯消去法的 SIMD 并行化}}}
+
+    \vspace{\fill}
+
+    % \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+    % \HRule \\[0.9cm]
+    % \HRule \\[2.0cm]
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 丁屹}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2013280}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+
+    \vfill
+    {\Large \today}
+  \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\tableofcontents
+\newpage
+
+\section{问题描述}
+高斯消去的计算模式如图 \ref{gauss} 所示，在第$k$步时，对第$k$行从$(k, k)$开始进行除法操作，并且将后续的$k + 1$至$N$行进行减去第$k$行的操作，串行算法如下面伪代码所示。
+\begin{figure}
+  \centering
+  \includegraphics[width=1\textwidth]{gauss.png}
+  \caption{高斯消去法示意图}
+  \label{gauss}
+\end{figure}
+\begin{breakablealgorithm}
+  \caption{普通高斯消元算法伪代码}
+  \begin{algorithmic}[1] %每行显示行号  
+    \Function {LU}{}
+    \For {$k:=0$\ \textbf{to}\ $n$}
+    \For {$j:=k+1$\ \textbf{to}\ $n$}
+    \State {$A[k,j]:=A[k,j]/A[k,k]$}
+    \EndFor
+    \State{$A[k,k]:=1.0$}
+    \For {$i:=k+1$\ \textbf{to}\ $n$}
+    \For {$j:=k+1$\ \textbf{to}\ $n$}
+    \State {$A[i,j]:=A[i,j]-A[i,k]*A[k,j]$}
+    \EndFor
+    \State{$A[i,k]:=0$}
+    \EndFor
+    \EndFor
+    \EndFunction
+  \end{algorithmic}
+\end{breakablealgorithm}
+
+观察高斯消去算法，注意到伪代码第 4，5 行第一个内嵌循环中的$A[k, j] := A[k, j]/A[k, k]$以及伪代码第$8，9，10$行双层$for$循环中的$A[i, j] := A[i, j] − A[i, k]×A[k, j]$都是可以进行向量化的循环。可以通过SIMD 扩展指令对这两步进行并行优化。
+
+\section{SIMD算法设计}
+
+\subsection{测试用例的确定}
+
+由于测试数据集较大，不便于各个平台同步，所以采用固定随机数种子为 $12345687$ 的 mt19937随机数生成器。
+经过实验发现不同规模下，所有元素独立生成，限制大小在 $[0, 100]$，能够生成可以被正确消元的矩阵。
+
+代码如下：
+
+\begin{lstlisting}[title=测试数据集生成器,frame=trbl,language={C++}]
+  uniform_real_distribution<float> dist(0, 100);
+  mt19937       mt(12345687);
+  int           n;
+  istringstream iss(argv[1]);
+  iss >> n;
+  cout << n << endl;
+  for (int i = 1; i <= n; ++i)
+    for (int j = 1; j <= n; ++j) cout << dist(mt) << " \n"[j == n];
+\end{lstlisting}
+
+\subsection{算法设计}
+
+\subsubsection{默认平凡算法}
+
+编译选项：-O3；
+
+使用一维数组模拟矩阵，避免改变矩阵大小时第二维不方便调整、必须设成最大值的问题，可以减少 cache 失效；
+
+使用 $\#define\ matrix(i, j)\ arr[i * n + j]$ 宏，增强可读性；
+
+\begin{lstlisting}[title=平凡算法,frame=trbl,language={C++}]
+void func(int& ans, float arr[], int n) {
+#define matrix(i, j) arr[i * n + j]
+  for (int k = 0; k < n; ++k) {
+    for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+    matrix(k, k) = 1.0;
+    for (int i = k + 1; i < n; ++i) {
+      for (int j = k + 1; j < n; ++j)
+        matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+      matrix(i, k) = 0;
+    }
+  }
+#undef matrix
+}
+\end{lstlisting}
+
+\subsubsection{使用 NEON 指令集并行化加速}
+
+实验在华为鲲鹏 ARM 集群平台完成；
+
+编译选项：-march=native 或 -march=armv8-a，全部开启 -O3；
+
+\begin{lstlisting}[title=NEON 内存未对齐算法,frame=trbl,language={C++}]
+void func(int& ans, float arr[], int n) {
+#define matrix(i, j)  arr[i * n + j]
+#define pmatrix(i, j) (arr + (i * n + j))
+  for (int k = 0; k < n; ++k) {
+    auto vt = vdupq_n_f32(matrix(k, k));
+    int  j;
+    for (j = k + 1; j + 4 <= n; j += 4) {
+      auto va = vld1q_f32(pmatrix(k, j));
+      va      = vdivq_f32(va, vt);
+      vst1q_f32(pmatrix(k, j), va);
+    }
+    for (; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+    matrix(k, k) = 1.0;
+    for (int i = k + 1; i < n; ++i) {
+      auto vaik = vdupq_n_f32(matrix(i, k));
+      for (j = k + 1; j + 4 <= n; j += 4) {
+        auto vakj = vld1q_f32(pmatrix(k, j));
+        auto vaij = vld1q_f32(pmatrix(i, j));
+        auto vx   = vmulq_f32(vakj, vaik);
+        vaij      = vsubq_f32(vaij, vx);
+        vst1q_f32(pmatrix(i, j), vaij);
+      }
+      for (; j < n; ++j)
+        matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+      matrix(i, k) = 0;
+    }
+  }
+#undef matrix
+#undef pmatrix
+}
+\end{lstlisting}
+
+\begin{lstlisting}[title=NEON 内存对齐算法,frame=trbl,language={C++}]
+void func(int& ans, float arr[], int n) {
+#define matrix(i, j)  arr[i * n + j]
+#define pmatrix(i, j) (arr + (i * n + j))
+  for (int k = 0; k < n; ++k) {
+    auto vt = vdupq_n_f32(matrix(k, k));
+    int  j  = k + 1;
+    for (; j < n && j % 4; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+    for (; j + 4 <= n; j += 4) {
+      auto va = vld1q_f32(pmatrix(k, j));
+      va      = vdivq_f32(va, vt);
+      vst1q_f32(pmatrix(k, j), va);
+    }
+    for (; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+    matrix(k, k) = 1.0;
+    for (int i = k + 1; i < n; ++i) {
+      auto vaik = vdupq_n_f32(matrix(i, k));
+      for (j = k + 1; j < n && j % 4; ++j)
+        matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+      for (; j + 4 <= n; j += 4) {
+        auto vakj = vld1q_f32(pmatrix(k, j));
+        auto vaij = vld1q_f32(pmatrix(i, j));
+        auto vx   = vmulq_f32(vakj, vaik);
+        vaij      = vsubq_f32(vaij, vx);
+        vst1q_f32(pmatrix(i, j), vaij);
+      }
+      for (; j < n; ++j)
+        matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+      matrix(i, k) = 0;
+    }
+  }
+#undef matrix
+#undef pmatrix
+}
+\end{lstlisting}
+
+可以看到内存对齐算法就是在 $j := k + 1$ 之后先平凡地计算，直到 $j \% 4 = 0$，保证了偏移 $4 × 4 = 16$ 字节对齐 由于使用了 $aligned\_alloc$ 分配了 32 字节对齐的内存块，故保证了 16 字节对齐。
+
+\subsubsection{使用 SSE、AVX 指令集并行化加速}
+
+实验在本地 x86 平台完成；
+
+编译选项：-march=native -O3；
+
+x86 下的 SSE、AVX 指令与 NEON 指令有相似的定义，可以方便地转换。内存对齐方式也与 NEON 的内存对齐方式类似，篇幅原因不再给出代码。
+
+\begin{lstlisting}[title=SSE 内存未对齐算法,frame=trbl,language={C++}]
+void func(int& ans, float arr[], int n) {
+#define matrix(i, j)  arr[i * n + j]
+#define pmatrix(i, j) (arr + (i * n + j))
+  for (int k = 0; k < n; ++k) {
+    auto vt =
+      _mm_set_ps(matrix(k, k), matrix(k, k), matrix(k, k), matrix(k, k));
+    int j;
+    for (j = k + 1; j + 4 <= n; j += 4) {
+      auto va = _mm_loadu_ps(pmatrix(k, j));
+      va      = _mm_div_ps(va, vt);
+      _mm_storeu_ps(pmatrix(k, j), va);
+    }
+    for (; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+    matrix(k, k) = 1.0;
+    for (int i = k + 1; i < n; ++i) {
+      auto vaik =
+        _mm_set_ps(matrix(i, k), matrix(i, k), matrix(i, k), matrix(i, k));
+      for (j = k + 1; j + 4 <= n; j += 4) {
+        auto vakj = _mm_loadu_ps(pmatrix(k, j));
+        auto vaij = _mm_loadu_ps(pmatrix(i, j));
+        auto vx   = _mm_mul_ps(vakj, vaik);
+        vaij      = _mm_sub_ps(vaij, vx);
+        _mm_storeu_ps(pmatrix(i, j), vaij);
+      }
+      for (; j < n; ++j)
+        matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+      matrix(i, k) = 0;
+    }
+  }
+#undef matrix
+#undef pmatrix
+}
+\end{lstlisting}
+
+\begin{lstlisting}[title=AVX 内存未对齐算法,frame=trbl,language={C++}]
+void func(int& ans, float arr[], int n) {
+#define matrix(i, j)  arr[i * n + j]
+#define pmatrix(i, j) (arr + (i * n + j))
+  for (int k = 0; k < n; ++k) {
+    auto vt =
+      _mm256_set_ps(matrix(k, k), matrix(k, k), matrix(k, k), matrix(k, k),
+                    matrix(k, k), matrix(k, k), matrix(k, k), matrix(k, k));
+    int j;
+    for (j = k + 1; j + 8 <= n; j += 8) {
+      auto va = _mm256_loadu_ps(pmatrix(k, j));
+      va      = _mm256_div_ps(va, vt);
+      _mm256_storeu_ps(pmatrix(k, j), va);
+    }
+    for (; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+    matrix(k, k) = 1.0;
+    for (int i = k + 1; i < n; ++i) {
+      auto vaik =
+        _mm256_set_ps(matrix(i, k), matrix(i, k), matrix(i, k), matrix(i, k),
+                      matrix(i, k), matrix(i, k), matrix(i, k), matrix(i, k));
+      for (j = k + 1; j + 8 <= n; j += 8) {
+        auto vakj = _mm256_loadu_ps(pmatrix(k, j));
+        auto vaij = _mm256_loadu_ps(pmatrix(i, j));
+        auto vx   = _mm256_mul_ps(vakj, vaik);
+        vaij      = _mm256_sub_ps(vaij, vx);
+        _mm256_storeu_ps(pmatrix(i, j), vaij);
+      }
+      for (; j < n; ++j)
+        matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+      matrix(i, k) = 0;
+    }
+  }
+#undef matrix
+#undef pmatrix
+}
+\end{lstlisting}
+
+\section{实验及结果分析}
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{llllllllll}
+      Scale       & Reperat times & x86 ordinary (s) & x86 SSE unaligned (s) & x86 SSE aligned (s) & x86 AVX unaligned (s) & x86 AVX aligned (s) & arm ordinary (s) & arm NEON unaligned (s) & arm NEON aligned (s) \\
+      8 × 8       & 100           & 0.000001330460   & 0.000001379360        & 0.000001326980      & 0.000001479190        & 0.000001370300      & 0.000000525400   & 0.000000541900         & 0.000000484900       \\
+      16 × 16     & 50            & 0.000001706920   & 0.000001955580        & 0.000001729300      & 0.000001857780        & 0.000001653840      & 0.000001666000   & 0.000001702000         & 0.000001401600       \\
+      32 × 32     & 50            & 0.000003640080   & 0.000004258960        & 0.000003834360      & 0.000004063340        & 0.000003761560      & 0.000007127000   & 0.000008225000         & 0.000006609400       \\
+      64 × 64     & 20            & 0.000015253300   & 0.000021343650        & 0.000015731900      & 0.000015885350        & 0.000014212650      & 0.000037566500   & 0.000051374500         & 0.000040106500       \\
+      128 × 128   & 15            & 0.000098880800   & 0.000121785400        & 0.000096791267      & 0.000089601000        & 0.000077025000      & 0.000231574000   & 0.000349447333         & 0.000275770000       \\
+      256 × 256   & 10            & 0.000716408500   & 0.000878330700        & 0.000622779500      & 0.000588631100        & 0.000452169800      & 0.001820356000   & 0.002725389000         & 0.002021820000       \\
+      512 × 512   & 10            & 0.006722607300   & 0.007444306600        & 0.005199414400      & 0.005004266800        & 0.003661343100      & 0.014974396000   & 0.021199319000         & 0.016449107000       \\
+      1024 × 1024 & 5             & 0.064893815400   & 0.084234089600        & 0.063566091600      & 0.052573721800        & 0.047696106600      & 0.135511226000   & 0.196087378000         & 0.137847262000       \\
+      2048 × 2048 & 3             & 1.400074583333   & 1.534334469667        & 1.501020112000      & 1.366758369000        & 1.317500752000      & 1.101775523333   & 1.511987780000         & 1.093070066667       \\
+      4096 × 4096 & 1             & 10.705585484000  & 11.438922085000       & 11.608043578000     & 9.813709308000        & 10.472416784000     & 13.088073440000  & 14.938220180000        & 14.540709080000
+    \end{tabular}%
+  }
+  \caption{所有平台结果对比}
+  \label{tab:result}
+\end{table}
+
+从表 \ref{tab:result} 中可以发现：
+\begin{itemize}
+  \item x86 平台比 arm 平台普遍更快，可能是 CPU 单核性能差异的结果
+  \item 单纯使用 SIMD 指令但不进行内存对齐带来的性能优化有限，甚至比 O3 优化的平凡算法慢
+  \item 使用 SIMD 指令且进行内存对齐可以带来明显的性能提升
+  \item SSE 的指令级并行程度不够，提升不太明显，但内存对齐的 AVX 指令性能优化明显，某些情况下对比平凡算法速度有近一倍的提升
+  \item 在 arm 中，指令级并行加速效果不明显，甚至比 O3 优化的平凡算法慢，内存对齐的 NEON 指令在某些情况下可以超过 O3 优化的平凡算法
+\end{itemize}
+% \newpage
+
+% \section{参考文献}
+% \cite{1}\cite{2}\cite{3}\cite{4}\cite{5}\cite{6}
+
+% \bibliographystyle{plain}
+% \bibliography{Parallel-Programming-0.bib}
+
+\end{document}
