@@ -1,5 +1,5 @@
 #!/bin/sh
-# PBS -N sum
+# PBS -N s2013280-3
 # PBS -l nodes=1
 pscp -r -h $PBS_NODEFILE /home/s2013280/3 /home/s2013280/ 1>&2
 echo '[ordinary]'
