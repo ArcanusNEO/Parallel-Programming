@@ -25,11 +25,12 @@ public:
       if (n && m) arr.reset(new T[n * m]);
       else arr.release();
     }
-    if (n && m) std::memcpy(arr.get(), other.arr.get(), n * m * sizeof(T));
+    if (n && m && this != &other)
+      std::memcpy(arr.get(), other.arr.get(), n * m * sizeof(T));
   }
   matrix_t& operator=(matrix_t&& other) noexcept { this->swap(other); }
 
-  void swap(matrix_t&& other) noexcept {
+  void swap(matrix_t& other) noexcept {
     std::swap(n, other.n);
     std::swap(m, other.m);
     arr.swap(other.arr);
