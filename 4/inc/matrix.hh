@@ -11,14 +11,16 @@
 template <typename T> class matrix_t {
 public:
   matrix_t() noexcept { n = m = 0; }
+  // NOTICE: 使用了 new，假设不会抛出 std::bad_alloc 异常
   matrix_t(size_t x, size_t y = 1) noexcept {
     n = m = 0;
     this->resize(x, y);
   }
+  // NOTICE: 使用了 new，假设不会抛出 std::bad_alloc 异常
   matrix_t(const matrix_t<T>& other) noexcept { this->operator=(other); }
   matrix_t(matrix_t<T>&& other) noexcept { this->swap(other); }
 
-  // NOTICE: 调用了 new，假设不会抛出 std::bad_alloc 异常
+  // NOTICE: 使用了 new，假设不会抛出 std::bad_alloc 异常
   matrix_t<T>& operator=(const matrix_t<T>& other) noexcept {
     if (n != other.n || m != other.m) {
       n = other.n;
@@ -38,7 +40,7 @@ public:
   }
 
   // NOTICE: 必定会清空内容
-  // NOTICE: 调用了 new，假设不会抛出 std::bad_alloc 异常
+  // NOTICE: 使用了 new，假设不会抛出 std::bad_alloc 异常
   size_t resize(size_t x, size_t y = 1) noexcept {
     if (n == x && m == y && n && m)
       for (size_t i = 0; i < n * m; ++i) arr.get()[i] = T();
