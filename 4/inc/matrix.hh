@@ -6,8 +6,7 @@
 #include <memory>
 #include <string>
 
-// NOTICE:
-// 为了方便实现而采用memcpy和memset等基本函数处理T的值，所以没有深拷贝支持
+// 简单的矩阵类，基本可以当作普通向量或者二维数组使用，重载了 () 以实现元素访问
 template <typename T> class matrix_t {
 public:
   matrix_t() noexcept { n = m = 0; }
@@ -18,6 +17,7 @@ public:
   matrix_t(const matrix_t<T>& other) noexcept { this->operator=(other); }
   matrix_t(matrix_t<T>&& other) noexcept { this->swap(other); }
 
+  // NOTICE: 调用了 new，假设不会抛出 std::bad_alloc 异常
   matrix_t<T>& operator=(const matrix_t<T>& other) noexcept {
     if (n != other.n || m != other.m) {
       n = other.n;
@@ -26,7 +26,7 @@ public:
       else arr.release();
     }
     if (n && m && this != &other)
-      std::memcpy(arr.get(), other.arr.get(), n * m * sizeof(T));
+      for (size_t i = 0; i < n * m; ++i) arr.get()[i] = other.arr.get()[i];
   }
   matrix_t<T>& operator=(matrix_t<T>&& other) noexcept { this->swap(other); }
 
@@ -37,9 +37,10 @@ public:
   }
 
   // NOTICE: 会清空内容
+  // NOTICE: 调用了 new，假设不会抛出 std::bad_alloc 异常
   size_t resize(size_t x, size_t y = 1) noexcept {
     if (n == x && m == y && n && m)
-      std::memset(arr.get(), 0, n * m * sizeof(T));
+      for (size_t i = 0; i < n * m; ++i) arr.get()[i] = T();
     else {
       n = x;
       m = y;
