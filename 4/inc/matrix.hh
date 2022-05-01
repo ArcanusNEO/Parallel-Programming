@@ -6,7 +6,8 @@
 #include <memory>
 #include <string>
 
-// 简单的矩阵类，基本可以当作普通向量或者二维数组使用，重载了 () 以实现元素访问
+// 简单的矩阵类，基本也可以当作普通向量或者二维数组使用，重载了 ()
+// 以实现元素访问
 template <typename T> class matrix_t {
 public:
   matrix_t() noexcept { n = m = 0; }
@@ -50,13 +51,18 @@ public:
     return n * m;
   }
 
+  // NOTICE: 会删除矩阵所有信息，包括大小，如果只是想重置所有元素请使用
+  // resize(row(), col())
   void clear() noexcept {
     n = m = 0;
     arr.release();
   }
 
+  // 行数 × 列数
   size_t size() const noexcept { return n * m; }
+  // 行数
   size_t row() const noexcept { return n; }
+  // 列数
   size_t col() const noexcept { return m; }
 
   // 读取引用
