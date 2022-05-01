@@ -36,7 +36,7 @@ public:
     arr.swap(other.arr);
   }
 
-  // NOTICE: 会清空内容
+  // NOTICE: 必定会清空内容
   // NOTICE: 调用了 new，假设不会抛出 std::bad_alloc 异常
   size_t resize(size_t x, size_t y = 1) noexcept {
     if (n == x && m == y && n && m)
