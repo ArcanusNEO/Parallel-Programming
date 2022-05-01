@@ -1,0 +1,2 @@
+#!/bin/sh
+build/bin/ordinary conf/in.conf &>misc/x86-Linux-default-ordinary.out.txt
