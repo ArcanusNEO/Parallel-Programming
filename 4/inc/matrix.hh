@@ -7,7 +7,7 @@
 #include <string>
 
 // NOTICE:
-// 为了方便实现而采用memcpy和memset等低级函数处理T的值，所以一般而言仅支持内置类型的T
+// 为了方便实现而采用memcpy和memset等基本函数处理T的值，所以没有深拷贝支持
 template <typename T> class matrix_t {
 public:
   matrix_t() noexcept { n = m = 0; }
@@ -15,10 +15,10 @@ public:
     n = m = 0;
     this->resize(x, y);
   }
-  matrix_t(const matrix_t& other) noexcept { this->operator=(other); }
-  matrix_t(matrix_t&& other) noexcept { this->swap(other); }
+  matrix_t(const matrix_t<T>& other) noexcept { this->operator=(other); }
+  matrix_t(matrix_t<T>&& other) noexcept { this->swap(other); }
 
-  matrix_t& operator=(const matrix_t& other) noexcept {
+  matrix_t<T>& operator=(const matrix_t<T>& other) noexcept {
     if (n != other.n || m != other.m) {
       n = other.n;
       m = other.m;
@@ -28,9 +28,9 @@ public:
     if (n && m && this != &other)
       std::memcpy(arr.get(), other.arr.get(), n * m * sizeof(T));
   }
-  matrix_t& operator=(matrix_t&& other) noexcept { this->swap(other); }
+  matrix_t<T>& operator=(matrix_t<T>&& other) noexcept { this->swap(other); }
 
-  void swap(matrix_t& other) noexcept {
+  void swap(matrix_t<T>& other) noexcept {
     std::swap(n, other.n);
     std::swap(m, other.m);
     arr.swap(other.arr);
