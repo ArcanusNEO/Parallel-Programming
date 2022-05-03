@@ -3,7 +3,7 @@
 using namespace std;
 
 void func(int& ans, float arr[], int n) {
-#define matrix(i, j) arr[i * n + j]
+#define matrix(i, j) arr[(i) *n + (j)]
   for (int k = 0; k < n; ++k) {
     for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
     matrix(k, k) = 1.0;
