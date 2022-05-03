@@ -2,3 +2,4 @@
 build/bin/ordinary conf/in.conf &>misc/x86-Linux-default-ordinary.out.txt
 build/bin/dynamic conf/in.conf &>misc/x86-Linux-default-dynamic.out.txt
 build/bin/static-sem conf/in.conf &>misc/x86-Linux-default-static-sem.out.txt
+build/bin/static-sem-all conf/in.conf &>misc/x86-Linux-default-static-sem-all.out.txt
