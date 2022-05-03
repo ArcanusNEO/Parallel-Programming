@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "main.hh"
 #include "solve.hh"
@@ -11,17 +12,23 @@ int    n;
 float* arr;
 
 struct thread_param_t {
-  int k, t_id;
+  int t_id;
 };
 
-pthread_t      thread_handle[MAX_SUB_THREAD];
-thread_param_t thread_param[MAX_SUB_THREAD];
+sem_t sem_leader;
+sem_t sem_div[MAX_SUB_THREAD];
+sem_t sem_elim[MAX_SUB_THREAD];
 
 void* thread_func(void* param) {
   auto p    = (thread_param_t*) param;
-  auto k    = p->k;
   auto t_id = p->t_id;
-  int  i    = k + t_id + 1;
+  for (int k = 0; k < n; ++k) {
+    if (t_id == 0) {
+      for (int j = k + 1; j < n; ++j)
+        matrix(k, j) = matrix(k, j) / matrix(k, k);
+      matrix(k, k) = 1.0;
+    } else sem_wait(sem_div + t_id - 1);
+  }
   for (int j = k + 1; j < n; ++j)
     matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
   matrix(i, k) = 0;
