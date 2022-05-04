@@ -1,0 +1,55 @@
+[ordinary]
+file: 1024.in repeat: 5 avg-time: 0.135057174000 s
+file: 128.in repeat: 15 avg-time: 0.000232146667 s
+file: 16.in repeat: 50 avg-time: 0.000001665600 s
+file: 2048.in repeat: 3 avg-time: 1.099449913333 s
+file: 256.in repeat: 10 avg-time: 0.001820686000 s
+file: 32.in repeat: 50 avg-time: 0.000007003400 s
+file: 4096.in repeat: 1 avg-time: 13.262091040000 s
+file: 512.in repeat: 10 avg-time: 0.014908263000 s
+file: 64.in repeat: 20 avg-time: 0.000037868500 s
+file: 8.in repeat: 100 avg-time: 0.000000530000 s
+[dynamic]
+file: 1024.in repeat: 5 avg-time: 21.790754608000 s
+file: 128.in repeat: 15 avg-time: 0.338396283333 s
+file: 16.in repeat: 50 avg-time: 0.004892212000 s
+file: 2048.in repeat: 3 avg-time: 85.470935310000 s
+file: 256.in repeat: 10 avg-time: 1.318216261000 s
+file: 32.in repeat: 50 avg-time: 0.020191436600 s
+file: 4096.in repeat: 1 avg-time: 353.288384510000 s
+file: 512.in repeat: 10 avg-time: 5.282467893000 s
+file: 64.in repeat: 20 avg-time: 0.080842077000 s
+file: 8.in repeat: 100 avg-time: 0.001069426000 s
+[static-sem]
+file: 1024.in repeat: 5 avg-time: 0.077263730000 s
+file: 128.in repeat: 15 avg-time: 0.002734098000 s
+file: 16.in repeat: 50 avg-time: 0.000546852800 s
+file: 2048.in repeat: 3 avg-time: 0.541380500000 s
+file: 256.in repeat: 10 avg-time: 0.005964593000 s
+file: 32.in repeat: 50 avg-time: 0.000823440200 s
+file: 4096.in repeat: 1 avg-time: 5.892652880000 s
+file: 512.in repeat: 10 avg-time: 0.018504859000 s
+file: 64.in repeat: 20 avg-time: 0.001490467500 s
+file: 8.in repeat: 100 avg-time: 0.000414891100 s
+[static-sem-all]
+file: 1024.in repeat: 5 avg-time: 0.088223814000 s
+file: 128.in repeat: 15 avg-time: 0.004017182667 s
+file: 16.in repeat: 50 avg-time: 0.000708521400 s
+file: 2048.in repeat: 3 avg-time: 0.604317156667 s
+file: 256.in repeat: 10 avg-time: 0.009138907000 s
+file: 32.in repeat: 50 avg-time: 0.001197251400 s
+file: 4096.in repeat: 1 avg-time: 5.209506790000 s
+file: 512.in repeat: 10 avg-time: 0.020430503000 s
+file: 64.in repeat: 20 avg-time: 0.001791016000 s
+file: 8.in repeat: 100 avg-time: 0.000451200400 s
+[static-barrier]
+file: 1024.in repeat: 5 avg-time: 0.082351834000 s
+file: 128.in repeat: 15 avg-time: 0.003097213333 s
+file: 16.in repeat: 50 avg-time: 0.000631723800 s
+file: 2048.in repeat: 3 avg-time: 0.503372826667 s
+file: 256.in repeat: 10 avg-time: 0.005816473000 s
+file: 32.in repeat: 50 avg-time: 0.000821696600 s
+file: 4096.in repeat: 1 avg-time: 5.017878950000 s
+file: 512.in repeat: 10 avg-time: 0.017091460000 s
+file: 64.in repeat: 20 avg-time: 0.001415785500 s
+file: 8.in repeat: 100 avg-time: 0.000430526600 s
