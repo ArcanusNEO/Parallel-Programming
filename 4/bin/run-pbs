@@ -1,12 +1,18 @@
 #!/bin/sh
-# PBS -N s2013280-3
+# PBS -N s2013280-4
 # PBS -l nodes=1
-pscp -r -h $PBS_NODEFILE /home/s2013280/3 /home/s2013280/ 1>&2
+pscp -r -h $PBS_NODEFILE /home/s2013280/4 /home/s2013280/ 1>&2
 echo '[ordinary]'
-/home/s2013280/3/build/bin/ordinary /home/s2013280/3/conf/in-pbs.conf
+/home/s2013280/4/build/bin/ordinary /home/s2013280/4/conf/in-pbs.conf
 
-echo '[arm-neon-aligned]'
-/home/s2013280/3/build/bin/arm-neon-aligned /home/s2013280/3/conf/in-pbs.conf
+echo '[dynamic]'
+/home/s2013280/4/build/bin/dynamic /home/s2013280/4/conf/in-pbs.conf
 
-echo '[arm-neon-unaligned]'
-/home/s2013280/3/build/bin/arm-neon-unaligned /home/s2013280/3/conf/in-pbs.conf
+echo '[static-sem]'
+/home/s2013280/4/build/bin/static-sem /home/s2013280/4/conf/in-pbs.conf
+
+echo '[static-sem-all]'
+/home/s2013280/4/build/bin/static-sem-all /home/s2013280/4/conf/in-pbs.conf
+
+echo '[static-barrier]'
+/home/s2013280/4/build/bin/static-barrier /home/s2013280/4/conf/in-pbs.conf
