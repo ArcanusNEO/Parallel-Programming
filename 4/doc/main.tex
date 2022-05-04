@@ -244,6 +244,30 @@ void func(int& ans, float arr[], int n) {
 }
 \end{lstlisting}
 
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 ordinary (s) & arm ordinary (s) \\ \hline
+  8 × 8       & 100           & 0.000001330460   & 0.000000525400   \\ \hline
+  16 × 16     & 50            & 0.000001706920   & 0.000001666000   \\ \hline
+  32 × 32     & 50            & 0.000003640080   & 0.000007127000   \\ \hline
+  64 × 64     & 20            & 0.000015253300   & 0.000037566500   \\ \hline
+  128 × 128   & 15            & 0.000098880800   & 0.000231574000   \\ \hline
+  256 × 256   & 10            & 0.000716408500   & 0.001820356000   \\ \hline
+  512 × 512   & 10            & 0.006722607300   & 0.014974396000   \\ \hline
+  1024 × 1024 & 5             & 0.064893815400   & 0.135511226000   \\ \hline
+  2048 × 2048 & 3             & 1.400074583333   & 1.101775523333   \\ \hline
+  4096 × 4096 & 1             & 10.705585484000  & 13.088073440000  \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台平凡算法结果对比}
+  \label{tab:ord}
+\end{table}
+
 \subsubsection{使用 Pthreads 动态创建线程并行化加速}
 
 \begin{lstlisting}[title=动态创建线程frame=trbl,language={C++}]
@@ -296,6 +320,30 @@ void func(int& ans, float arr[], int n) {
   #undef matrix
 }
 \end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 dynamic (s)  & arm dynamic (s)  \\ \hline
+  8 × 8       & 100           & 0.000408343660   & 0.001069426000   \\ \hline
+  16 × 16     & 50            & 0.001760123900   & 0.004892212000   \\ \hline
+  32 × 32     & 50            & 0.007970805160   & 0.020191436600   \\ \hline
+  64 × 64     & 20            & 0.031911559450   & 0.080842077000   \\ \hline
+  128 × 128   & 15            & 0.130038008533   & 0.338396283333   \\ \hline
+  256 × 256   & 10            & 0.515502232000   & 1.318216261000   \\ \hline
+  512 × 512   & 10            & 2.105457739200   & 5.282467893000   \\ \hline
+  1024 × 1024 & 5             & 8.558513793600   & 21.790754608000  \\ \hline
+  2048 × 2048 & 3             & 33.120794944000  & 85.470935310000  \\ \hline
+  4096 × 4096 & 1             & 139.134070615000 & 353.288384510000 \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台动态线程结果对比}
+  \label{tab:dynamic}
+\end{table}
 
 \subsubsection{使用 Pthreads 线程池和信号量同步并行化加速}
 
@@ -355,6 +403,30 @@ void func(int& ans, float arr[], int n) {
   #undef matrix
 }
 \end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 semaphore (s) & arm semaphore (s) \\ \hline
+  8 × 8       & 100           & 0.000220605390    & 0.000414891100    \\ \hline
+  16 × 16     & 50            & 0.000319653680    & 0.000546852800    \\ \hline
+  32 × 32     & 50            & 0.000513098020    & 0.000823440200    \\ \hline
+  64 × 64     & 20            & 0.000966301100    & 0.001490467500    \\ \hline
+  128 × 128   & 15            & 0.001879047067    & 0.002734098000    \\ \hline
+  256 × 256   & 10            & 0.003608040400    & 0.005964593000    \\ \hline
+  512 × 512   & 10            & 0.011124012800    & 0.018504859000    \\ \hline
+  1024 × 1024 & 5             & 0.050837437000    & 0.077263730000    \\ \hline
+  2048 × 2048 & 3             & 1.160066842000    & 0.541380500000    \\ \hline
+  4096 × 4096 & 1             & 11.558711337000   & 5.892652880000    \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台线程池+信号量同步+主线程执行除法结果对比}
+  \label{tab:sem}
+\end{table}
 
 \begin{lstlisting}[title=线程池+信号量同步+工作线程执行除法,frame=trbl,language={C++}]
   #define matrix(i, j) arr[(i) *n + (j)]
@@ -424,6 +496,30 @@ void func(int& ans, float arr[], int n) {
   #undef matrix
 \end{lstlisting}
 
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 semaphore all (s) & arm semaphore all (s) \\ \hline
+  8 × 8       & 100           & 0.000295141480        & 0.000451200400        \\ \hline
+  16 × 16     & 50            & 0.000439524060        & 0.000708521400        \\ \hline
+  32 × 32     & 50            & 0.000699135760        & 0.001197251400        \\ \hline
+  64 × 64     & 20            & 0.001294170900        & 0.001791016000        \\ \hline
+  128 × 128   & 15            & 0.002380586333        & 0.004017182667        \\ \hline
+  256 × 256   & 10            & 0.005267385000        & 0.009138907000        \\ \hline
+  512 × 512   & 10            & 0.013941518400        & 0.020430503000        \\ \hline
+  1024 × 1024 & 5             & 0.065091814800        & 0.088223814000        \\ \hline
+  2048 × 2048 & 3             & 1.268976019000        & 0.604317156667        \\ \hline
+  4096 × 4096 & 1             & 11.411054368000       & 5.209506790000        \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台线程池+信号量同步+工作线程执行除法结果对比}
+  \label{tab:sem-all}
+\end{table}
+
 \subsubsection{使用 Pthreads 线程池和 barrier 栅栏同步并行化加速}
 
 \begin{lstlisting}[title=线程池+栅栏同步+工作线程执行除法,frame=trbl,language={C++}]
@@ -486,8 +582,100 @@ void func(int& ans, float arr[], int n) {
 }
 \end{lstlisting}
 
-\section{实验及结果分析}
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 barrier (s) & arm barrier (s) \\ \hline
+  8 × 8       & 100           & 0.000356697420  & 0.000430526600  \\ \hline
+  16 × 16     & 50            & 0.000631893380  & 0.000631723800  \\ \hline
+  32 × 32     & 50            & 0.000695531360  & 0.000821696600  \\ \hline
+  64 × 64     & 20            & 0.001590516150  & 0.001415785500  \\ \hline
+  128 × 128   & 15            & 0.003217344067  & 0.003097213333  \\ \hline
+  256 × 256   & 10            & 0.004891007500  & 0.005816473000  \\ \hline
+  512 × 512   & 10            & 0.013557604400  & 0.017091460000  \\ \hline
+  1024 × 1024 & 5             & 0.055628581000  & 0.082351834000  \\ \hline
+  2048 × 2048 & 3             & 1.297545969000  & 0.503372826667  \\ \hline
+  4096 × 4096 & 1             & 12.573134918000 & 5.017878950000  \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台线程池+栅栏同步+工作线程执行除法结果对比}
+  \label{tab:barrier}
+\end{table}
 
+\section{实验结果分析}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|lllllll|}
+  \hline
+  Scale       & Reperat times & x86 ordinary (s) & x86 dynamic (s)  & x86 semaphore (s) & x86 semaphore all (s) & x86 barrier (s) \\ \hline
+  8 × 8       & 100           & 0.000001330460   & 0.000408343660   & 0.000220605390    & 0.000295141480        & 0.000356697420  \\ \hline
+  16 × 16     & 50            & 0.000001706920   & 0.001760123900   & 0.000319653680    & 0.000439524060        & 0.000631893380  \\ \hline
+  32 × 32     & 50            & 0.000003640080   & 0.007970805160   & 0.000513098020    & 0.000699135760        & 0.000695531360  \\ \hline
+  64 × 64     & 20            & 0.000015253300   & 0.031911559450   & 0.000966301100    & 0.001294170900        & 0.001590516150  \\ \hline
+  128 × 128   & 15            & 0.000098880800   & 0.130038008533   & 0.001879047067    & 0.002380586333        & 0.003217344067  \\ \hline
+  256 × 256   & 10            & 0.000716408500   & 0.515502232000   & 0.003608040400    & 0.005267385000        & 0.004891007500  \\ \hline
+  512 × 512   & 10            & 0.006722607300   & 2.105457739200   & 0.011124012800    & 0.013941518400        & 0.013557604400  \\ \hline
+  1024 × 1024 & 5             & 0.064893815400   & 8.558513793600   & 0.050837437000    & 0.065091814800        & 0.055628581000  \\ \hline
+  2048 × 2048 & 3             & 1.400074583333   & 33.120794944000  & 1.160066842000    & 1.268976019000        & 1.297545969000  \\ \hline
+  4096 × 4096 & 1             & 10.705585484000  & 139.134070615000 & 11.558711337000   & 11.411054368000       & 12.573134918000 \\ \hline
+  \end{tabular}%
+  }
+  \caption{x86 平台所有结果对比}
+  \label{tab:x86}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|lllllll|}
+  \hline
+  Scale       & Reperat times & arm ordinary (s) & arm dynamic (s)  & arm semaphore (s) & arm semaphore all (s) & arm barrier (s) \\ \hline
+  8 × 8       & 100           & 0.000000525400   & 0.001069426000   & 0.000414891100    & 0.000451200400        & 0.000430526600  \\ \hline
+  16 × 16     & 50            & 0.000001666000   & 0.004892212000   & 0.000546852800    & 0.000708521400        & 0.000631723800  \\ \hline
+  32 × 32     & 50            & 0.000007127000   & 0.020191436600   & 0.000823440200    & 0.001197251400        & 0.000821696600  \\ \hline
+  64 × 64     & 20            & 0.000037566500   & 0.080842077000   & 0.001490467500    & 0.001791016000        & 0.001415785500  \\ \hline
+  128 × 128   & 15            & 0.000231574000   & 0.338396283333   & 0.002734098000    & 0.004017182667        & 0.003097213333  \\ \hline
+  256 × 256   & 10            & 0.001820356000   & 1.318216261000   & 0.005964593000    & 0.009138907000        & 0.005816473000  \\ \hline
+  512 × 512   & 10            & 0.014974396000   & 5.282467893000   & 0.018504859000    & 0.020430503000        & 0.017091460000  \\ \hline
+  1024 × 1024 & 5             & 0.135511226000   & 21.790754608000  & 0.077263730000    & 0.088223814000        & 0.082351834000  \\ \hline
+  2048 × 2048 & 3             & 1.101775523333   & 85.470935310000  & 0.541380500000    & 0.604317156667        & 0.503372826667  \\ \hline
+  4096 × 4096 & 1             & 13.088073440000  & 353.288384510000 & 5.892652880000    & 5.209506790000        & 5.017878950000  \\ \hline
+  \end{tabular}%
+  }
+  \caption{arm 平台所有结果对比}
+  \label{tab:arm}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{all.png}
+  \caption{所有平台所有结果对比柱状图}
+  \label{pic:all}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{x86.png}
+  \caption{x86 平台所有结果对比柱状图}
+  \label{pic:x86}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{arm.png}
+  \caption{arm 平台所有结果对比柱状图}
+  \label{pic:arm}
+\end{figure}
 
 % \newpage
 
