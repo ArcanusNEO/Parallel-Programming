@@ -1,0 +1,11 @@
+[static-barrier-neon]
+file: 1024.in repeat: 5 avg-time: 0.080288012000 s
+file: 128.in repeat: 15 avg-time: 0.002935288000 s
+file: 16.in repeat: 50 avg-time: 0.000546980800 s
+file: 2048.in repeat: 3 avg-time: 0.455167490000 s
+file: 256.in repeat: 10 avg-time: 0.005479598000 s
+file: 32.in repeat: 50 avg-time: 0.000801270200 s
+file: 4096.in repeat: 1 avg-time: 4.582658000000 s
+file: 512.in repeat: 10 avg-time: 0.015217643000 s
+file: 64.in repeat: 20 avg-time: 0.001367928500 s
+file: 8.in repeat: 100 avg-time: 0.000414370700 s
