@@ -16,3 +16,6 @@ echo '[static-sem-all]'
 
 echo '[static-barrier]'
 /home/s2013280/4/build/bin/static-barrier /home/s2013280/4/conf/in-pbs.conf
+
+echo '[static-barrier-neon]'
+/home/s2013280/4/build/bin/static-barrier-neon /home/s2013280/4/conf/in-pbs.conf
