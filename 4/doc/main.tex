@@ -220,6 +220,8 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
   find_package(Threads REQUIRED)
 \end{minted}
 
+统一使用 1 管理线程 + 7 工作线程的 8 线程设计；
+
 \subsection{算法设计}
 
 \subsubsection{默认平凡算法}
@@ -608,6 +610,17 @@ void func(int& ans, float arr[], int n) {
 
 \section{实验结果分析}
 
+观察比较表 \ref{tab:ord}、\ref{tab:dynamic}、\ref{tab:sem}、\ref{tab:sem-all}、\ref{tab:barrier} 
+可以发现使用线程池加信号量或者栅栏同步多线程的方式，在 arm 平台可以大幅提升性能，小数据量下效果微弱甚至不如平凡算法，但是大数据量有成倍提升。
+
+4096 × 4096 数据规模下普通信号量同步用时 5.892652880000 s，平凡算法用时 13.088073440000 s，加速比 2.221083391；
+所有循环纳入线程回调函数用时 5.209506790000 s，加速比 2.51234406；使用栅栏同步可以继续获得性能提升，用时 5.017878950000 s，加速比 2.608287998。
+
+然而，使用动态线程的方式处理会导致性能倒退，不如平凡算法：可以发现创建线程和销毁线程的开销巨大，造成性能下降。
+
+比较表 \ref{tab:ord} 两平台的平凡算法，可以发现本地 x86 平台单核性能领先于 arm 平台；但是比较表 \ref{tab:sem}、\ref{tab:sem-all}、\ref{tab:barrier} 中两平台可以发现，对于小数据量还是 x86 平台领先，但是 arm 平台在 大数据量下表现更优，实现反超。
+在 x86 平台上使用信号量同步并将所有循环纳入线程回调函数或者栅栏同步时无助于性能提升。
+
 % Please add the following required packages to your document preamble:
 % \usepackage{graphicx}
 \begin{table}[]
@@ -676,6 +689,15 @@ void func(int& ans, float arr[], int n) {
   \caption{arm 平台所有结果对比柱状图}
   \label{pic:arm}
 \end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{barrier-perf.png}
+  \caption{对 barrier 使用 perf 分析}
+  \label{pic:perf}
+\end{figure}
+
+如图 \ref{pic:perf}，对 barrier 使用 perf 进行分析可以发现并行度良好。
 
 % \newpage
 
