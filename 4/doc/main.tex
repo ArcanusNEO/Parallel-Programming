@@ -522,7 +522,7 @@ void func(int& ans, float arr[], int n) {
   \label{tab:sem-all}
 \end{table}
 
-\subsubsection{使用 Pthreads 线程池和 barrier 栅栏同步并行化加速}
+\subsubsection{使用 Pthreads 线程池和 barrier 栅栏同步以及 NEON 指令集并行化加速}
 
 \begin{lstlisting}[title=线程池+栅栏同步+工作线程执行除法,frame=trbl,language={C++}]
   #define matrix(i, j) arr[(i) *n + (j)]
