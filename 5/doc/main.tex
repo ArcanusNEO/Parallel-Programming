@@ -1,0 +1,789 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {figures/} }
+\usepackage{ctex}
+\setCJKmainfont[ItalicFont=Noto Sans CJK SC Bold, BoldFont=Noto Serif CJK SC Black]{Noto Serif CJK SC}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%-----------------------伪代码------------------
+\usepackage{algorithm}  
+\usepackage{algorithmicx}  
+\usepackage{algpseudocode}  
+\floatname{algorithm}{Algorithm}  
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}  
+\renewcommand{\algorithmicensure}{\textbf{Output:}} 
+\usepackage{lipsum}  
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+  \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+      {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+      \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+      \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+      \fi
+      \kern2pt\hrule\kern2pt
+     }
+  }{% \end{breakablealgorithm}
+     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+  \end{center}
+  }
+\makeatother
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\appendixpagename}{附录}
+\renewcommand{\refname}{参考文献}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+    \textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+    \textbf{\huge{\kaishu{并行程序设计第 4 次作业}}}\\[2.3cm]
+    \textbf{\Huge\textbf{\kaishu{高斯消去法的 Pthreads 并行化}}}
+
+    \vspace{\fill}
+
+    % \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+    % \HRule \\[0.9cm]
+    % \HRule \\[2.0cm]
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 丁屹}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2013280}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+
+    \vfill
+    {\Large \today}
+  \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\tableofcontents
+\newpage
+
+\section{问题描述}
+高斯消去的计算模式如图 \ref{gauss} 所示，在第$k$步时，对第$k$行从$(k, k)$开始进行除法操作，并且将后续的$k + 1$至$N$行进行减去第$k$行的操作，串行算法如下面伪代码所示。
+\begin{figure}
+  \centering
+  \includegraphics[width=1\textwidth]{gauss.png}
+  \caption{高斯消去法示意图}
+  \label{gauss}
+\end{figure}
+\begin{breakablealgorithm}
+  \caption{普通高斯消元算法伪代码}
+  \begin{algorithmic}[1] %每行显示行号  
+    \Function {LU}{}
+    \For {$k:=0$\ \textbf{to}\ $n$}
+    \For {$j:=k+1$\ \textbf{to}\ $n$}
+    \State {$A[k,j]:=A[k,j]/A[k,k]$}
+    \EndFor
+    \State{$A[k,k]:=1.0$}
+    \For {$i:=k+1$\ \textbf{to}\ $n$}
+    \For {$j:=k+1$\ \textbf{to}\ $n$}
+    \State {$A[i,j]:=A[i,j]-A[i,k]*A[k,j]$}
+    \EndFor
+    \State{$A[i,k]:=0$}
+    \EndFor
+    \EndFor
+    \EndFunction
+  \end{algorithmic}
+\end{breakablealgorithm}
+
+观察高斯消去算法，注意到伪代码第 4，5 行第一个内嵌循环中的$A[k, j] := A[k, j]/A[k, k]$以及伪代码第$8，9，10$行双层$for$循环中的$A[i, j] := A[i, j] − A[i, k]×A[k, j]$都是可以进行向量化的循环。可以通过SIMD 扩展指令对这两步进行并行优化。
+
+\section{Pthreads 算法设计}
+
+源码链接：
+\url{https://github.com/ArcanusNEO/Parallel-Programming/tree/master/4}
+
+\subsection{测试用例的确定}
+
+由于测试数据集较大，不便于各个平台同步，所以采用固定随机数种子为 $12345687$ 的 mt19937随机数生成器。
+经过实验发现不同规模下，所有元素独立生成，限制大小在 $[0, 100]$，能够生成可以被正确消元的矩阵。
+
+代码如下：
+
+\begin{lstlisting}[title=测试数据集生成器,frame=trbl,language={C++}]
+  uniform_real_distribution<float> dist(0, 100);
+  mt19937       mt(12345687);
+  int           n;
+  istringstream iss(argv[1]);
+  iss >> n;
+  cout << n << endl;
+  for (int i = 1; i <= n; ++i)
+    for (int j = 1; j <= n; ++j) cout << dist(mt) << " \n"[j == n];
+\end{lstlisting}
+
+\subsection{实验环境和相关配置}
+
+实验在华为鲲鹏 ARM 集群平台和本地 Arch Linux x86\_64 平台完成；
+
+华为鲲鹏 ARM 集群平台使用毕昇的 clang++ 编译器，本地 Arch Linux x86\_64 平台使用 GNU GCC 编译器；
+
+使用 cmake 构建项目，编译开关如下：
+
+\begin{minted}[mathescape,
+  linenos,
+  numbersep=5pt,
+  gobble=2,
+  frame=lines,
+  framesep=2mm,
+  highlightcolor=green!40]{cmake}
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+\end{minted}
+
+统一使用 1 管理线程 + 7 工作线程的 8 线程设计；
+
+\subsection{算法设计}
+
+\subsubsection{默认平凡算法}
+
+使用一维数组模拟矩阵，避免改变矩阵大小时第二维不方便调整、必须设成最大值的问题，可以减少 cache 失效；
+
+使用 $\#define\ matrix(i, j)\ arr[(i) * n + (j)]$ 宏，增强可读性；
+
+\begin{lstlisting}[title=平凡算法,frame=trbl,language={C++}]
+#define matrix(i, j) arr[(i) * n + (j)]
+void func(int& ans, float arr[], int n) {
+  for (int k = 0; k < n; ++k) {
+    for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+    matrix(k, k) = 1.0;
+    for (int i = k + 1; i < n; ++i) {
+      for (int j = k + 1; j < n; ++j)
+        matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+      matrix(i, k) = 0;
+    }
+  }
+#undef matrix
+}
+\end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 ordinary (s) & arm ordinary (s) \\ \hline
+  8 × 8       & 100           & 0.000001330460   & 0.000000525400   \\ \hline
+  16 × 16     & 50            & 0.000001706920   & 0.000001666000   \\ \hline
+  32 × 32     & 50            & 0.000003640080   & 0.000007127000   \\ \hline
+  64 × 64     & 20            & 0.000015253300   & 0.000037566500   \\ \hline
+  128 × 128   & 15            & 0.000098880800   & 0.000231574000   \\ \hline
+  256 × 256   & 10            & 0.000716408500   & 0.001820356000   \\ \hline
+  512 × 512   & 10            & 0.006722607300   & 0.014974396000   \\ \hline
+  1024 × 1024 & 5             & 0.064893815400   & 0.135511226000   \\ \hline
+  2048 × 2048 & 3             & 1.400074583333   & 1.101775523333   \\ \hline
+  4096 × 4096 & 1             & 10.705585484000  & 13.088073440000  \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台平凡算法结果对比}
+  \label{tab:ord}
+\end{table}
+
+\subsubsection{使用 Pthreads 动态创建线程并行化加速}
+
+\begin{lstlisting}[title=动态创建线程frame=trbl,language={C++}]
+  #define matrix(i, j) arr[(i) *n + (j)]
+
+  #define MAX_SUB_THREAD 7
+  
+  int    n;
+  float* arr;
+  
+  struct thread_param_t {
+    int k, t_id;
+  };
+  
+  pthread_t      thread_handle[MAX_SUB_THREAD];
+  thread_param_t thread_param[MAX_SUB_THREAD];
+  
+  void* thread_func(void* param) {
+    auto p    = (thread_param_t*) param;
+    auto k    = p->k;
+    auto t_id = p->t_id;
+    int  i    = k + t_id + 1;
+    for (int j = k + 1; j < n; ++j)
+      matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+    matrix(i, k) = 0;
+    pthread_exit(nullptr);
+  }
+  
+  void func(int& ans, float arr[], int n) {
+    ::n   = n;
+    ::arr = arr;
+    for (int k = 0; k < n; ++k) {
+      for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+      matrix(k, k)     = 1.0;
+      int worker_count = n - 1 - k;
+      for (int offset = 0; offset < worker_count; offset += MAX_SUB_THREAD) {
+        for (int t_id = 0, i = t_id + offset;
+             i < worker_count && t_id < MAX_SUB_THREAD;
+             ++t_id, i = t_id + offset) {
+          thread_param[t_id] = {k, i};
+          pthread_create(thread_handle + t_id, nullptr, thread_func,
+                         thread_param + t_id);
+        }
+        for (int t_id = 0, i                                      = t_id + offset;
+             i < worker_count && t_id < MAX_SUB_THREAD; ++t_id, i = t_id + offset)
+          pthread_join(thread_handle[t_id], nullptr);
+      }
+    }
+  }
+  #undef matrix
+}
+\end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 dynamic (s)  & arm dynamic (s)  \\ \hline
+  8 × 8       & 100           & 0.000408343660   & 0.001069426000   \\ \hline
+  16 × 16     & 50            & 0.001760123900   & 0.004892212000   \\ \hline
+  32 × 32     & 50            & 0.007970805160   & 0.020191436600   \\ \hline
+  64 × 64     & 20            & 0.031911559450   & 0.080842077000   \\ \hline
+  128 × 128   & 15            & 0.130038008533   & 0.338396283333   \\ \hline
+  256 × 256   & 10            & 0.515502232000   & 1.318216261000   \\ \hline
+  512 × 512   & 10            & 2.105457739200   & 5.282467893000   \\ \hline
+  1024 × 1024 & 5             & 8.558513793600   & 21.790754608000  \\ \hline
+  2048 × 2048 & 3             & 33.120794944000  & 85.470935310000  \\ \hline
+  4096 × 4096 & 1             & 139.134070615000 & 353.288384510000 \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台动态线程结果对比}
+  \label{tab:dynamic}
+\end{table}
+
+\subsubsection{使用 Pthreads 线程池和信号量同步并行化加速}
+
+\begin{lstlisting}[title=线程池+信号量同步+主线程执行除法,frame=trbl,language={C++}]
+  #define matrix(i, j) arr[(i) *n + (j)]
+
+  #define MAX_SUB_THREAD 7
+  
+  int    n;
+  float* arr;
+  
+  struct thread_param_t {
+    int t_id;
+  };
+  
+  sem_t          sem_main;
+  sem_t          sem_workerstart[MAX_SUB_THREAD];
+  pthread_t      handle[MAX_SUB_THREAD];
+  thread_param_t param[MAX_SUB_THREAD];
+  
+  void* thread_func(void* param) {
+    auto p    = (thread_param_t*) param;
+    auto t_id = p->t_id;
+    for (int k = 0; k < n; ++k) {
+      sem_wait(sem_workerstart + t_id);
+      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
+        for (int j = k + 1; j < n; ++j)
+          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+        matrix(i, k) = 0;
+      }
+      sem_post(&sem_main);
+    }
+    pthread_exit(nullptr);
+  }
+  
+  void func(int& ans, float arr[], int n) {
+    ::n   = n;
+    ::arr = arr;
+    sem_init(&sem_main, 0, 0);
+    for (int i = 0; i < MAX_SUB_THREAD; ++i) sem_init(sem_workerstart + i, 0, 0);
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
+      param[t_id].t_id = t_id;
+      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
+    }
+    for (int k = 0; k < n; ++k) {
+      for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+      matrix(k, k) = 1.0;
+      for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
+        sem_post(sem_workerstart + t_id);
+      for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) sem_wait(&sem_main);
+    }
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
+      pthread_join(handle[t_id], nullptr);
+    sem_destroy(&sem_main);
+    for (int i = 0; i < MAX_SUB_THREAD; ++i) sem_destroy(sem_workerstart + i);
+  }
+  #undef matrix
+}
+\end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 semaphore (s) & arm semaphore (s) \\ \hline
+  8 × 8       & 100           & 0.000220605390    & 0.000414891100    \\ \hline
+  16 × 16     & 50            & 0.000319653680    & 0.000546852800    \\ \hline
+  32 × 32     & 50            & 0.000513098020    & 0.000823440200    \\ \hline
+  64 × 64     & 20            & 0.000966301100    & 0.001490467500    \\ \hline
+  128 × 128   & 15            & 0.001879047067    & 0.002734098000    \\ \hline
+  256 × 256   & 10            & 0.003608040400    & 0.005964593000    \\ \hline
+  512 × 512   & 10            & 0.011124012800    & 0.018504859000    \\ \hline
+  1024 × 1024 & 5             & 0.050837437000    & 0.077263730000    \\ \hline
+  2048 × 2048 & 3             & 1.160066842000    & 0.541380500000    \\ \hline
+  4096 × 4096 & 1             & 11.558711337000   & 5.892652880000    \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台线程池+信号量同步+主线程执行除法结果对比}
+  \label{tab:sem}
+\end{table}
+
+\begin{lstlisting}[title=线程池+信号量同步+工作线程执行除法,frame=trbl,language={C++}]
+  #define matrix(i, j) arr[(i) *n + (j)]
+
+  #define MAX_SUB_THREAD 7
+
+  int    n;
+  float* arr;
+
+  struct thread_param_t {
+    int t_id;
+  };
+
+  sem_t          sem_leader;
+  sem_t          sem_div[MAX_SUB_THREAD - 1];
+  sem_t          sem_elim[MAX_SUB_THREAD - 1];
+  pthread_t      handle[MAX_SUB_THREAD];
+  thread_param_t param[MAX_SUB_THREAD];
+
+  void* thread_func(void* param) {
+    auto p    = (thread_param_t*) param;
+    auto t_id = p->t_id;
+    for (int k = 0; k < n; ++k) {
+      if (t_id == 0) {
+        for (int j = k + 1; j < n; ++j)
+          matrix(k, j) = matrix(k, j) / matrix(k, k);
+        matrix(k, k) = 1.0;
+      } else sem_wait(sem_div + t_id - 1);
+      if (t_id == 0)
+        for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) sem_post(sem_div + i);
+      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
+        for (int j = k + 1; j < n; ++j)
+          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+        matrix(i, k) = 0.0;
+      }
+      if (t_id == 0) {
+        for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) sem_wait(&sem_leader);
+        for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) sem_post(sem_elim + i);
+      } else {
+        sem_post(&sem_leader);
+        sem_wait(sem_elim + t_id - 1);
+      }
+    }
+    pthread_exit(nullptr);
+  }
+
+  void func(int& ans, float arr[], int n) {
+    ::n   = n;
+    ::arr = arr;
+    sem_init(&sem_leader, 0, 0);
+    for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) {
+      sem_init(sem_div + i, 0, 0);
+      sem_init(sem_elim + i, 0, 0);
+    }
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
+      param[t_id].t_id = t_id;
+      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
+    }
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
+      pthread_join(handle[t_id], nullptr);
+    sem_destroy(&sem_leader);
+    for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) {
+      sem_destroy(sem_div + i);
+      sem_destroy(sem_elim + i);
+    }
+  }
+  #undef matrix
+\end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llll|}
+  \hline
+  Scale       & Reperat times & x86 semaphore all (s) & arm semaphore all (s) \\ \hline
+  8 × 8       & 100           & 0.000295141480        & 0.000451200400        \\ \hline
+  16 × 16     & 50            & 0.000439524060        & 0.000708521400        \\ \hline
+  32 × 32     & 50            & 0.000699135760        & 0.001197251400        \\ \hline
+  64 × 64     & 20            & 0.001294170900        & 0.001791016000        \\ \hline
+  128 × 128   & 15            & 0.002380586333        & 0.004017182667        \\ \hline
+  256 × 256   & 10            & 0.005267385000        & 0.009138907000        \\ \hline
+  512 × 512   & 10            & 0.013941518400        & 0.020430503000        \\ \hline
+  1024 × 1024 & 5             & 0.065091814800        & 0.088223814000        \\ \hline
+  2048 × 2048 & 3             & 1.268976019000        & 0.604317156667        \\ \hline
+  4096 × 4096 & 1             & 11.411054368000       & 5.209506790000        \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台线程池+信号量同步+工作线程执行除法结果对比}
+  \label{tab:sem-all}
+\end{table}
+
+\subsubsection{使用 Pthreads 线程池和 barrier 栅栏同步以及 NEON 指令集并行化加速}
+
+\begin{lstlisting}[title=线程池+栅栏同步+工作线程执行除法,frame=trbl,language={C++}]
+  #define matrix(i, j) arr[(i) *n + (j)]
+
+  #define MAX_SUB_THREAD 7
+  
+  int    n;
+  float* arr;
+  
+  struct thread_param_t {
+    int t_id;
+  };
+  
+  pthread_barrier_t barrier_div;
+  pthread_barrier_t barrier_elim;
+  pthread_t         handle[MAX_SUB_THREAD];
+  thread_param_t    param[MAX_SUB_THREAD];
+  
+  void* thread_func(void* param) {
+    auto p    = (thread_param_t*) param;
+    auto t_id = p->t_id;
+    for (int k = 0; k < n; ++k) {
+      if (t_id == 0) {
+        for (int j = k + 1; j < n; ++j)
+          matrix(k, j) = matrix(k, j) / matrix(k, k);
+        matrix(k, k) = 1.0;
+      }
+  
+      pthread_barrier_wait(&barrier_div);
+  
+      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
+        for (int j = k + 1; j < n; ++j)
+          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+        matrix(i, k) = 0.0;
+      }
+  
+      pthread_barrier_wait(&barrier_elim);
+    }
+    pthread_exit(nullptr);
+  }
+  
+  void func(int& ans, float arr[], int n) {
+    ::n   = n;
+    ::arr = arr;
+    pthread_barrier_init(&barrier_div, nullptr, MAX_SUB_THREAD);
+    pthread_barrier_init(&barrier_elim, nullptr, MAX_SUB_THREAD);
+  
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
+      param[t_id].t_id = t_id;
+      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
+    }
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
+      pthread_join(handle[t_id], nullptr);
+  
+    pthread_barrier_destroy(&barrier_div);
+    pthread_barrier_destroy(&barrier_elim);
+  }
+  #undef matrix
+}
+\end{lstlisting}
+
+
+\begin{lstlisting}[title=线程池 + 栅栏同步 + 工作线程执行除法 + NEON 指令集加速,frame=trbl,language={C++}]
+  #define matrix(i, j) arr[(i) *n + (j)]
+  #define pmatrix(i, j) (arr + ((i) * n + (j)))
+  
+  #define MAX_SUB_THREAD 7
+  
+  int    n;
+  float* arr;
+  
+  struct thread_param_t {
+    int t_id;
+  };
+  
+  pthread_barrier_t barrier_div;
+  pthread_barrier_t barrier_elim;
+  pthread_t         handle[MAX_SUB_THREAD];
+  thread_param_t    param[MAX_SUB_THREAD];
+  
+  void* thread_func(void* param) {
+    auto p    = (thread_param_t*) param;
+    auto t_id = p->t_id;
+    for (int k = 0; k < n; ++k) {
+      if (t_id == 0) {
+        auto vt = vdupq_n_f32(matrix(k, k));
+        int  j;
+        for (j = k + 1; j + 4 <= n; j += 4) {
+          auto va = vld1q_f32(pmatrix(k, j));
+          va      = vdivq_f32(va, vt);
+          vst1q_f32(pmatrix(k, j), va);
+        }
+        for (; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+        matrix(k, k) = 1.0;
+      }
+  
+      pthread_barrier_wait(&barrier_div);
+  
+      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
+        auto vaik = vdupq_n_f32(matrix(i, k));
+        int  j;
+        for (j = k + 1; j + 4 <= n; j += 4) {
+          auto vakj = vld1q_f32(pmatrix(k, j));
+          auto vaij = vld1q_f32(pmatrix(i, j));
+          auto vx   = vmulq_f32(vakj, vaik);
+          vaij      = vsubq_f32(vaij, vx);
+          vst1q_f32(pmatrix(i, j), vaij);
+        }
+        for (; j < n; ++j)
+          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+        matrix(i, k) = 0;
+      }
+  
+      pthread_barrier_wait(&barrier_elim);
+    }
+    pthread_exit(nullptr);
+  }
+  
+  void func(int& ans, float arr[], int n) {
+    ::n   = n;
+    ::arr = arr;
+    pthread_barrier_init(&barrier_div, nullptr, MAX_SUB_THREAD);
+    pthread_barrier_init(&barrier_elim, nullptr, MAX_SUB_THREAD);
+  
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
+      param[t_id].t_id = t_id;
+      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
+    }
+    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
+      pthread_join(handle[t_id], nullptr);
+  
+    pthread_barrier_destroy(&barrier_div);
+    pthread_barrier_destroy(&barrier_elim);
+  }
+  #undef matrix
+  #undef pmatrix
+\end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|lllll|}
+  \hline
+  Scale       & Reperat times & x86 barrier (s) & arm barrier (s) & arm barrier with neon (s) \\ \hline
+  8 × 8       & 100           & 0.000356697420  & 0.000430526600  & 0.000414370700            \\ \hline
+  16 × 16     & 50            & 0.000631893380  & 0.000631723800  & 0.000546980800            \\ \hline
+  32 × 32     & 50            & 0.000695531360  & 0.000821696600  & 0.000801270200            \\ \hline
+  64 × 64     & 20            & 0.001590516150  & 0.001415785500  & 0.001367928500            \\ \hline
+  128 × 128   & 15            & 0.003217344067  & 0.003097213333  & 0.002935288000            \\ \hline
+  256 × 256   & 10            & 0.004891007500  & 0.005816473000  & 0.005479598000            \\ \hline
+  512 × 512   & 10            & 0.013557604400  & 0.017091460000  & 0.015217643000            \\ \hline
+  1024 × 1024 & 5             & 0.055628581000  & 0.082351834000  & 0.080288012000            \\ \hline
+  2048 × 2048 & 3             & 1.297545969000  & 0.503372826667  & 0.455167490000            \\ \hline
+  4096 × 4096 & 1             & 12.573134918000 & 5.017878950000  & 4.582658000000            \\ \hline
+  \end{tabular}%
+  }
+  \caption{所有平台线程池 + 栅栏同步 + 工作线程执行除法 + SIMD 优化结果对比}
+  \label{tab:barrier}
+  \end{table}
+
+\section{实验结果分析}
+
+观察比较表 \ref{tab:ord}、\ref{tab:dynamic}、\ref{tab:sem}、\ref{tab:sem-all}、\ref{tab:barrier} 
+可以发现使用线程池加信号量或者栅栏同步多线程的方式，在 arm 平台可以大幅提升性能，小数据量下效果微弱甚至不如平凡算法，但是大数据量有成倍提升。
+
+4096 × 4096 数据规模 arm 平台下普通信号量同步用时 5.892652880000 s，平凡算法用时 13.088073440000 s，加速比 2.221083391；
+所有循环纳入线程回调函数用时 5.209506790000 s，加速比 2.51234406；
+使用栅栏同步可以继续获得性能提升，用时 5.017878950000 s，加速比 2.608287998；
+使用栅栏同步加上 NEON 指令集 SIMD 优化可以继续获得性能提升，用时 4.582658000000 s，加速比 2.856000478；
+
+然而，使用动态线程的方式处理会导致性能倒退，不如平凡算法：可以发现创建线程和销毁线程的开销巨大，造成性能下降。
+
+比较表 \ref{tab:ord} 两平台的平凡算法，可以发现本地 x86 平台单核性能领先于 arm 平台；但是比较表 \ref{tab:sem}、\ref{tab:sem-all}、\ref{tab:barrier} 中两平台可以发现，对于小数据量还是 x86 平台领先，但是 arm 平台在 大数据量下表现更优，实现反超。
+在 x86 平台上使用信号量同步并将所有循环纳入线程回调函数或者栅栏同步时无助于性能提升。
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|lllllll|}
+  \hline
+  Scale       & Reperat times & x86 ordinary (s) & x86 dynamic (s)  & x86 semaphore (s) & x86 semaphore all (s) & x86 barrier (s) \\ \hline
+  8 × 8       & 100           & 0.000001330460   & 0.000408343660   & 0.000220605390    & 0.000295141480        & 0.000356697420  \\ \hline
+  16 × 16     & 50            & 0.000001706920   & 0.001760123900   & 0.000319653680    & 0.000439524060        & 0.000631893380  \\ \hline
+  32 × 32     & 50            & 0.000003640080   & 0.007970805160   & 0.000513098020    & 0.000699135760        & 0.000695531360  \\ \hline
+  64 × 64     & 20            & 0.000015253300   & 0.031911559450   & 0.000966301100    & 0.001294170900        & 0.001590516150  \\ \hline
+  128 × 128   & 15            & 0.000098880800   & 0.130038008533   & 0.001879047067    & 0.002380586333        & 0.003217344067  \\ \hline
+  256 × 256   & 10            & 0.000716408500   & 0.515502232000   & 0.003608040400    & 0.005267385000        & 0.004891007500  \\ \hline
+  512 × 512   & 10            & 0.006722607300   & 2.105457739200   & 0.011124012800    & 0.013941518400        & 0.013557604400  \\ \hline
+  1024 × 1024 & 5             & 0.064893815400   & 8.558513793600   & 0.050837437000    & 0.065091814800        & 0.055628581000  \\ \hline
+  2048 × 2048 & 3             & 1.400074583333   & 33.120794944000  & 1.160066842000    & 1.268976019000        & 1.297545969000  \\ \hline
+  4096 × 4096 & 1             & 10.705585484000  & 139.134070615000 & 11.558711337000   & 11.411054368000       & 12.573134918000 \\ \hline
+  \end{tabular}%
+  }
+  \caption{x86 平台所有结果对比}
+  \label{tab:x86}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|llllllll|}
+  \hline
+  Scale       & Reperat times & arm ordinary (s) & arm dynamic (s)  & arm semaphore (s) & arm semaphore all (s) & arm barrier (s) & arm barrier with neon (s) \\ \hline
+  8 × 8       & 100           & 0.000000525400   & 0.001069426000   & 0.000414891100    & 0.000451200400        & 0.000430526600  & 0.000414370700            \\ \hline
+  16 × 16     & 50            & 0.000001666000   & 0.004892212000   & 0.000546852800    & 0.000708521400        & 0.000631723800  & 0.000546980800            \\ \hline
+  32 × 32     & 50            & 0.000007127000   & 0.020191436600   & 0.000823440200    & 0.001197251400        & 0.000821696600  & 0.000801270200            \\ \hline
+  64 × 64     & 20            & 0.000037566500   & 0.080842077000   & 0.001490467500    & 0.001791016000        & 0.001415785500  & 0.001367928500            \\ \hline
+  128 × 128   & 15            & 0.000231574000   & 0.338396283333   & 0.002734098000    & 0.004017182667        & 0.003097213333  & 0.002935288000            \\ \hline
+  256 × 256   & 10            & 0.001820356000   & 1.318216261000   & 0.005964593000    & 0.009138907000        & 0.005816473000  & 0.005479598000            \\ \hline
+  512 × 512   & 10            & 0.014974396000   & 5.282467893000   & 0.018504859000    & 0.020430503000        & 0.017091460000  & 0.015217643000            \\ \hline
+  1024 × 1024 & 5             & 0.135511226000   & 21.790754608000  & 0.077263730000    & 0.088223814000        & 0.082351834000  & 0.080288012000            \\ \hline
+  2048 × 2048 & 3             & 1.101775523333   & 85.470935310000  & 0.541380500000    & 0.604317156667        & 0.503372826667  & 0.455167490000            \\ \hline
+  4096 × 4096 & 1             & 13.088073440000  & 353.288384510000 & 5.892652880000    & 5.209506790000        & 5.017878950000  & 4.582658000000            \\ \hline
+  \end{tabular}%
+  }
+  \caption{arm 平台所有结果对比}
+  \label{tab:arm}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{all.png}
+  \caption{所有平台所有结果对比柱状图}
+  \label{pic:all}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{x86.png}
+  \caption{x86 平台所有结果对比柱状图}
+  \label{pic:x86}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{arm.png}
+  \caption{arm 平台所有结果对比柱状图}
+  \label{pic:arm}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{barrier-perf.png}
+  \caption{对 barrier 使用 perf 分析}
+  \label{pic:perf}
+\end{figure}
+
+如图 \ref{pic:perf}，对 barrier 使用 perf 进行分析可以发现并行度良好。
+
+% \newpage
+
+% \section{参考文献}
+% \cite{1}\cite{2}\cite{3}\cite{4}\cite{5}\cite{6}
+
+% \bibliographystyle{plain}
+% \bibliography{Parallel-Programming-0.bib}
+
+\end{document}
