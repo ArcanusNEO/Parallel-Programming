@@ -1,0 +1,89 @@
+%% Creator: Inkscape 1.1.2 (0a00cf5339, 2022-02-04, custom), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'all_svg-tex.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{1441.30394541bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.42939464)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{all_svg-tex.pdf}}%
+    \put(0.0303662,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.10891712,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}2000000\end{tabular}}}}%
+    \put(0.19840302,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}4000000\end{tabular}}}}%
+    \put(0.28788892,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}6000000\end{tabular}}}}%
+    \put(0.37737482,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}8000000\end{tabular}}}}%
+    \put(0.465012,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}10000000\end{tabular}}}}%
+    \put(0.5544979,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}12000000\end{tabular}}}}%
+    \put(0.64398379,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}14000000\end{tabular}}}}%
+    \put(0.73346969,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}16000000\end{tabular}}}}%
+    \put(0.82295559,0.01014829){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}18000000\end{tabular}}}}%
+    \put(0.02364001,0.01893954){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.02364001,0.07546316){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}2\end{tabular}}}}%
+    \put(0.02364001,0.13198678){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}4\end{tabular}}}}%
+    \put(0.02364001,0.1885104){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}6\end{tabular}}}}%
+    \put(0.02364001,0.24501436){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}8\end{tabular}}}}%
+    \put(0.02000157,0.30153798){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}10\end{tabular}}}}%
+    \put(0.02000157,0.3580616){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}12\end{tabular}}}}%
+    \put(0.02000157,0.41456555){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}14\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{all_svg-tex.pdf}}%
+    \put(0.89208591,0.26621563){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}x86 ordinary (s)\end{tabular}}}}%
+    \put(0.89208591,0.25642135){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}x86 OpenMP 4 threads (s)\end{tabular}}}}%
+    \put(0.89208591,0.24662707){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}x86 OpenMP 8 threads (s)\end{tabular}}}}%
+    \put(0.89208591,0.23683279){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}x86 OpenMP 16 threads (s)\end{tabular}}}}%
+    \put(0.89208591,0.22703851){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}x86 OpenMP 4 threads AVX (s)\end{tabular}}}}%
+    \put(0.89208591,0.21724423){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}x86 OpenMP 8 threads AVX (s)\end{tabular}}}}%
+    \put(0.89208591,0.20746961){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arm ordinary (s)\end{tabular}}}}%
+    \put(0.89208591,0.19767533){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arm OpenMP 4 threads (s)\end{tabular}}}}%
+    \put(0.89208591,0.18788105){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arm OpenMP 8 threads (s)\end{tabular}}}}%
+    \put(0.89208591,0.17808677){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arm OpenMP 16 threads (s)\end{tabular}}}}%
+    \put(0.89208591,0.16829249){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arm OpenMP 4 threads NEON (s)\end{tabular}}}}%
+    \put(0.89208591,0.15849821){\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}arm OpenMP 8 threads NEON (s)\end{tabular}}}}%
+  \end{picture}%
+\endgroup%
