@@ -1,2 +1,7 @@
 #!/bin/sh
 build/bin/ordinary conf/in.conf &>misc/x86-Linux-default-ordinary.out.txt
+build/bin/openmp-8 conf/in.conf &>misc/x86-Linux-default-openmp-8.out.txt
+build/bin/openmp-4 conf/in.conf &>misc/x86-Linux-default-openmp-4.out.txt
+build/bin/openmp-16 conf/in.conf &>misc/x86-Linux-default-openmp-16.out.txt
+build/bin/openmp-8-avx conf/in.conf &>misc/x86-Linux-default-openmp-8-avx.out.txt
+build/bin/openmp-4-avx conf/in.conf &>misc/x86-Linux-default-openmp-4-avx.out.txt
