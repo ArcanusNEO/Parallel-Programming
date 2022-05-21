@@ -4,3 +4,13 @@
 pscp -r -h $PBS_NODEFILE /home/s2013280/5 /home/s2013280/ 1>&2
 echo '[ordinary]'
 /home/s2013280/5/build/bin/ordinary /home/s2013280/5/conf/in-pbs.conf
+echo '[openmp-8]'
+/home/s2013280/5/build/bin/openmp-8 /home/s2013280/5/conf/in-pbs.conf
+echo '[openmp-4]'
+/home/s2013280/5/build/bin/openmp-4 /home/s2013280/5/conf/in-pbs.conf
+echo '[openmp-16]'
+/home/s2013280/5/build/bin/openmp-16 /home/s2013280/5/conf/in-pbs.conf
+echo '[openmp-8-neon]'
+/home/s2013280/5/build/bin/openmp-8-neon /home/s2013280/5/conf/in-pbs.conf
+echo '[openmp-4-neon]'
+/home/s2013280/5/build/bin/openmp-4-neon /home/s2013280/5/conf/in-pbs.conf
