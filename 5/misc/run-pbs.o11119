@@ -1,0 +1,66 @@
+[ordinary]
+file: 1024.in repeat: 5 avg-time: 0.135597574000 s
+file: 128.in repeat: 15 avg-time: 0.000230763333 s
+file: 16.in repeat: 50 avg-time: 0.000001664000 s
+file: 2048.in repeat: 3 avg-time: 1.097608290000 s
+file: 256.in repeat: 10 avg-time: 0.001815385000 s
+file: 32.in repeat: 50 avg-time: 0.000007077800 s
+file: 4096.in repeat: 1 avg-time: 12.415273850000 s
+file: 512.in repeat: 10 avg-time: 0.015168666000 s
+file: 64.in repeat: 20 avg-time: 0.000037557000 s
+file: 8.in repeat: 100 avg-time: 0.000000526000 s
+[openmp-8]
+file: 1024.in repeat: 5 avg-time: 0.031736468000 s
+file: 128.in repeat: 15 avg-time: 0.001898954667 s
+file: 16.in repeat: 50 avg-time: 0.000235206200 s
+file: 2048.in repeat: 3 avg-time: 0.275254946667 s
+file: 256.in repeat: 10 avg-time: 0.004177293000 s
+file: 32.in repeat: 50 avg-time: 0.000496609800 s
+file: 4096.in repeat: 1 avg-time: 3.971935890000 s
+file: 512.in repeat: 10 avg-time: 0.009874281000 s
+file: 64.in repeat: 20 avg-time: 0.000993004500 s
+file: 8.in repeat: 100 avg-time: 0.000126543900 s
+[openmp-4]
+file: 1024.in repeat: 5 avg-time: 0.045375618000 s
+file: 128.in repeat: 15 avg-time: 0.001481558000 s
+file: 16.in repeat: 50 avg-time: 0.000179391200 s
+file: 2048.in repeat: 3 avg-time: 0.334706430000 s
+file: 256.in repeat: 10 avg-time: 0.003256248000 s
+file: 32.in repeat: 50 avg-time: 0.000357201000 s
+file: 4096.in repeat: 1 avg-time: 6.097139010000 s
+file: 512.in repeat: 10 avg-time: 0.009262748000 s
+file: 64.in repeat: 20 avg-time: 0.000716369500 s
+file: 8.in repeat: 100 avg-time: 0.000092409600 s
+[openmp-16]
+file: 1024.in repeat: 5 avg-time: 0.028419450000 s
+file: 128.in repeat: 15 avg-time: 0.002348973333 s
+file: 16.in repeat: 50 avg-time: 0.000287643600 s
+file: 2048.in repeat: 3 avg-time: 0.112933620000 s
+file: 256.in repeat: 10 avg-time: 0.005598914000 s
+file: 32.in repeat: 50 avg-time: 0.000712039600 s
+file: 4096.in repeat: 1 avg-time: 2.177672700000 s
+file: 512.in repeat: 10 avg-time: 0.011944158000 s
+file: 64.in repeat: 20 avg-time: 0.001336811000 s
+file: 8.in repeat: 100 avg-time: 0.000168758200 s
+[openmp-8-neon]
+file: 1024.in repeat: 5 avg-time: 0.043704944000 s
+file: 128.in repeat: 15 avg-time: 0.002336769333 s
+file: 16.in repeat: 50 avg-time: 0.000279533400 s
+file: 2048.in repeat: 3 avg-time: 0.303472556667 s
+file: 256.in repeat: 10 avg-time: 0.005148563000 s
+file: 32.in repeat: 50 avg-time: 0.000604768200 s
+file: 4096.in repeat: 1 avg-time: 4.243570140000 s
+file: 512.in repeat: 10 avg-time: 0.012737347000 s
+file: 64.in repeat: 20 avg-time: 0.001232058000 s
+file: 8.in repeat: 100 avg-time: 0.000150384800 s
+[openmp-4-neon]
+file: 1024.in repeat: 5 avg-time: 0.062839944000 s
+file: 128.in repeat: 15 avg-time: 0.001617558000 s
+file: 16.in repeat: 50 avg-time: 0.000188844800 s
+file: 2048.in repeat: 3 avg-time: 0.504436153333 s
+file: 256.in repeat: 10 avg-time: 0.003750217000 s
+file: 32.in repeat: 50 avg-time: 0.000385884200 s
+file: 4096.in repeat: 1 avg-time: 7.025737910000 s
+file: 512.in repeat: 10 avg-time: 0.011932396000 s
+file: 64.in repeat: 20 avg-time: 0.000774845500 s
+file: 8.in repeat: 100 avg-time: 0.000096044400 s
