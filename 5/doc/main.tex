@@ -118,8 +118,8 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
     \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
     \vspace{20mm}
     \textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
-    \textbf{\huge{\kaishu{并行程序设计第 4 次作业}}}\\[2.3cm]
-    \textbf{\Huge\textbf{\kaishu{高斯消去法的 Pthreads 并行化}}}
+    \textbf{\huge{\kaishu{并行程序设计第 5 次作业}}}\\[2.3cm]
+    \textbf{\Huge\textbf{\kaishu{高斯消去法的 OpenMP 并行化}}}
 
     \vspace{\fill}
 
@@ -175,12 +175,12 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
   \end{algorithmic}
 \end{breakablealgorithm}
 
-观察高斯消去算法，注意到伪代码第 4，5 行第一个内嵌循环中的$A[k, j] := A[k, j]/A[k, k]$以及伪代码第$8，9，10$行双层$for$循环中的$A[i, j] := A[i, j] − A[i, k]×A[k, j]$都是可以进行向量化的循环。可以通过SIMD 扩展指令对这两步进行并行优化。
+观察高斯消去算法，注意到伪代码第 4，5 行第一个内嵌循环中的$A[k, j] := A[k, j]/A[k, k]$以及伪代码第$8，9，10$行双层$for$循环中的$A[i, j] := A[i, j] − A[i, k]×A[k, j]$都是可以进行向量化的循环。可以通过 OpenMP 以及 SIMD 扩展指令对这两步进行并行优化。
 
-\section{Pthreads 算法设计}
+\section{OpenMP 算法设计}
 
 源码链接：
-\url{https://github.com/ArcanusNEO/Parallel-Programming/tree/master/4}
+\url{https://github.com/ArcanusNEO/Parallel-Programming/tree/master/5}
 
 \subsection{测试用例的确定}
 
@@ -204,7 +204,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 实验在华为鲲鹏 ARM 集群平台和本地 Arch Linux x86\_64 平台完成；
 
-华为鲲鹏 ARM 集群平台使用毕昇的 clang++ 编译器，本地 Arch Linux x86\_64 平台使用 GNU GCC 编译器；
+华为鲲鹏 ARM 集群平台使用华为毕昇 clang++ 编译器，本地 Arch Linux x86\_64 平台使用 GNU GCC 编译器；
 
 使用 cmake 构建项目，编译开关如下：
 
@@ -217,10 +217,10 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
   highlightcolor=green!40]{cmake}
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
   set(THREADS_PREFER_PTHREAD_FLAG ON)
-  find_package(Threads REQUIRED)
+  find_package(OpenMP REQUIRED)
 \end{minted}
 
-统一使用 1 管理线程 + 7 工作线程的 8 线程设计；
+实验测试了 4、8、16 线程并行的运行数据。
 
 \subsection{算法设计}
 
@@ -251,414 +251,178 @@ void func(int& ans, float arr[], int n) {
 \begin{table}[]
   \centering
   \resizebox{\textwidth}{!}{%
-  \begin{tabular}{|llll|}
-  \hline
-  Scale       & Reperat times & x86 ordinary (s) & arm ordinary (s) \\ \hline
-  8 × 8       & 100           & 0.000001330460   & 0.000000525400   \\ \hline
-  16 × 16     & 50            & 0.000001706920   & 0.000001666000   \\ \hline
-  32 × 32     & 50            & 0.000003640080   & 0.000007127000   \\ \hline
-  64 × 64     & 20            & 0.000015253300   & 0.000037566500   \\ \hline
-  128 × 128   & 15            & 0.000098880800   & 0.000231574000   \\ \hline
-  256 × 256   & 10            & 0.000716408500   & 0.001820356000   \\ \hline
-  512 × 512   & 10            & 0.006722607300   & 0.014974396000   \\ \hline
-  1024 × 1024 & 5             & 0.064893815400   & 0.135511226000   \\ \hline
-  2048 × 2048 & 3             & 1.400074583333   & 1.101775523333   \\ \hline
-  4096 × 4096 & 1             & 10.705585484000  & 13.088073440000  \\ \hline
-  \end{tabular}%
+    \begin{tabular}{|llll|}
+      \hline
+      Scale       & Reperat times & x86 ordinary (s) & arm ordinary (s) \\ \hline
+      8 × 8       & 100           & 0.000001330460   & 0.000000525400   \\ \hline
+      16 × 16     & 50            & 0.000001706920   & 0.000001666000   \\ \hline
+      32 × 32     & 50            & 0.000003640080   & 0.000007127000   \\ \hline
+      64 × 64     & 20            & 0.000015253300   & 0.000037566500   \\ \hline
+      128 × 128   & 15            & 0.000098880800   & 0.000231574000   \\ \hline
+      256 × 256   & 10            & 0.000716408500   & 0.001820356000   \\ \hline
+      512 × 512   & 10            & 0.006722607300   & 0.014974396000   \\ \hline
+      1024 × 1024 & 5             & 0.064893815400   & 0.135511226000   \\ \hline
+      2048 × 2048 & 3             & 1.400074583333   & 1.101775523333   \\ \hline
+      4096 × 4096 & 1             & 10.705585484000  & 13.088073440000  \\ \hline
+    \end{tabular}%
   }
   \caption{所有平台平凡算法结果对比}
   \label{tab:ord}
 \end{table}
 
-\subsubsection{使用 Pthreads 动态创建线程并行化加速}
+\subsubsection{所有平台下只使用 OpenMP 4、8、16 线程并行化加速}
 
-\begin{lstlisting}[title=动态创建线程frame=trbl,language={C++}]
-  #define matrix(i, j) arr[(i) *n + (j)]
+\begin{lstlisting}[title=OpenMP 并行化加速,frame=trbl,language={C++}]
+  #define NUM_THREADS 8
 
-  #define MAX_SUB_THREAD 7
-  
-  int    n;
-  float* arr;
-  
-  struct thread_param_t {
-    int k, t_id;
-  };
-  
-  pthread_t      thread_handle[MAX_SUB_THREAD];
-  thread_param_t thread_param[MAX_SUB_THREAD];
-  
-  void* thread_func(void* param) {
-    auto p    = (thread_param_t*) param;
-    auto k    = p->k;
-    auto t_id = p->t_id;
-    int  i    = k + t_id + 1;
-    for (int j = k + 1; j < n; ++j)
-      matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
-    matrix(i, k) = 0;
-    pthread_exit(nullptr);
-  }
-  
   void func(int& ans, float arr[], int n) {
-    ::n   = n;
-    ::arr = arr;
-    for (int k = 0; k < n; ++k) {
-      for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
-      matrix(k, k)     = 1.0;
-      int worker_count = n - 1 - k;
-      for (int offset = 0; offset < worker_count; offset += MAX_SUB_THREAD) {
-        for (int t_id = 0, i = t_id + offset;
-             i < worker_count && t_id < MAX_SUB_THREAD;
-             ++t_id, i = t_id + offset) {
-          thread_param[t_id] = {k, i};
-          pthread_create(thread_handle + t_id, nullptr, thread_func,
-                         thread_param + t_id);
-        }
-        for (int t_id = 0, i                                      = t_id + offset;
-             i < worker_count && t_id < MAX_SUB_THREAD; ++t_id, i = t_id + offset)
-          pthread_join(thread_handle[t_id], nullptr);
-      }
-    }
-  }
-  #undef matrix
-}
-\end{lstlisting}
-
-% Please add the following required packages to your document preamble:
-% \usepackage{graphicx}
-\begin{table}[]
-  \centering
-  \resizebox{\textwidth}{!}{%
-  \begin{tabular}{|llll|}
-  \hline
-  Scale       & Reperat times & x86 dynamic (s)  & arm dynamic (s)  \\ \hline
-  8 × 8       & 100           & 0.000408343660   & 0.001069426000   \\ \hline
-  16 × 16     & 50            & 0.001760123900   & 0.004892212000   \\ \hline
-  32 × 32     & 50            & 0.007970805160   & 0.020191436600   \\ \hline
-  64 × 64     & 20            & 0.031911559450   & 0.080842077000   \\ \hline
-  128 × 128   & 15            & 0.130038008533   & 0.338396283333   \\ \hline
-  256 × 256   & 10            & 0.515502232000   & 1.318216261000   \\ \hline
-  512 × 512   & 10            & 2.105457739200   & 5.282467893000   \\ \hline
-  1024 × 1024 & 5             & 8.558513793600   & 21.790754608000  \\ \hline
-  2048 × 2048 & 3             & 33.120794944000  & 85.470935310000  \\ \hline
-  4096 × 4096 & 1             & 139.134070615000 & 353.288384510000 \\ \hline
-  \end{tabular}%
-  }
-  \caption{所有平台动态线程结果对比}
-  \label{tab:dynamic}
-\end{table}
-
-\subsubsection{使用 Pthreads 线程池和信号量同步并行化加速}
-
-\begin{lstlisting}[title=线程池+信号量同步+主线程执行除法,frame=trbl,language={C++}]
   #define matrix(i, j) arr[(i) *n + (j)]
-
-  #define MAX_SUB_THREAD 7
-  
-  int    n;
-  float* arr;
-  
-  struct thread_param_t {
-    int t_id;
-  };
-  
-  sem_t          sem_main;
-  sem_t          sem_workerstart[MAX_SUB_THREAD];
-  pthread_t      handle[MAX_SUB_THREAD];
-  thread_param_t param[MAX_SUB_THREAD];
-  
-  void* thread_func(void* param) {
-    auto p    = (thread_param_t*) param;
-    auto t_id = p->t_id;
-    for (int k = 0; k < n; ++k) {
-      sem_wait(sem_workerstart + t_id);
-      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
-        for (int j = k + 1; j < n; ++j)
-          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+    int   i, j, k;
+    float tmp;
+  #pragma omp parallel num_threads(NUM_THREADS), private(i, j, k, tmp)
+    for (k = 0; k < n; ++k) {
+      tmp = matrix(k, k);
+  #pragma omp for
+      for (j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / tmp;
+      matrix(k, k) = 1.0;
+  #pragma omp for
+      for (i = k + 1; i < n; ++i) {
+        tmp = matrix(i, k);
+        for (j = k + 1; j < n; ++j)
+          matrix(i, j) = matrix(i, j) - tmp * matrix(k, j);
         matrix(i, k) = 0;
       }
-      sem_post(&sem_main);
     }
-    pthread_exit(nullptr);
+  #undef matrix
   }
-  
+\end{lstlisting}
+
+其中修改 NUM\_THREADS 宏定义可以指定不同的并行线程数。
+
+测试了 4、8、16 的数据。
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|llllllll|}
+      \hline
+      Scale       & Reperat times & x86 OpenMP 4 threads (s) & x86 OpenMP 8 threads (s) & x86 OpenMP 16 threads (s) & arm OpenMP 4 threads (s) & arm OpenMP 8 threads (s) & arm OpenMP 16 threads (s) \\ \hline
+      8 × 8       & 100           & 0.000007841100           & 0.000011223470           & 0.000016886970            & 0.000092409600           & 0.000126543900           & 0.000168758200            \\ \hline
+      16 × 16     & 50            & 0.000016620760           & 0.000019207720           & 0.000048819040            & 0.000179391200           & 0.000235206200           & 0.000287643600            \\ \hline
+      32 × 32     & 50            & 0.000029769140           & 0.000038458880           & 0.000097313150            & 0.000357201000           & 0.000496609800           & 0.000712039600            \\ \hline
+      64 × 64     & 20            & 0.000063419300           & 0.000077604000           & 0.000145570260            & 0.000716369500           & 0.000993004500           & 0.001336811000            \\ \hline
+      128 × 128   & 15            & 0.000164951200           & 0.000178723933           & 0.000232990467            & 0.001481558000           & 0.001898954667           & 0.002348973333            \\ \hline
+      256 × 256   & 10            & 0.000460212000           & 0.000523160100           & 0.001742868100            & 0.003256248000           & 0.004177293000           & 0.005598914000            \\ \hline
+      512 × 512   & 10            & 0.001627336600           & 0.001560966700           & 0.051130604200            & 0.009262748000           & 0.009874281000           & 0.011944158000            \\ \hline
+      1024 × 1024 & 5             & 0.012059842800           & 0.012384870200           & 0.743364184400            & 0.045375618000           & 0.031736468000           & 0.028419450000            \\ \hline
+      2048 × 2048 & 3             & 1.195753347667           & 0.823777882667           & 2.923949854667            & 0.334706430000           & 0.275254946667           & 0.112933620000            \\ \hline
+      4096 × 4096 & 1             & 11.418539925000          & 9.865224839000           & 11.725731761000           & 6.097139010000           & 3.971935890000           & 2.177672700000            \\ \hline
+    \end{tabular}%
+  }
+  \caption{所有平台 OpenMP only 结果对比}
+  \label{tab:openmp}
+\end{table}
+
+\subsubsection{使用 OpenMP 及 SIMD 在 x86 平台 4、8 线程并行化加速}
+
+\begin{lstlisting}[title=x86 OpenMP + AVX 并行化加速,frame=trbl,language={C++}]
+  #define NUM_THREADS 8
+
   void func(int& ans, float arr[], int n) {
-    ::n   = n;
-    ::arr = arr;
-    sem_init(&sem_main, 0, 0);
-    for (int i = 0; i < MAX_SUB_THREAD; ++i) sem_init(sem_workerstart + i, 0, 0);
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
-      param[t_id].t_id = t_id;
-      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
-    }
-    for (int k = 0; k < n; ++k) {
-      for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
+  #define matrix(i, j)  arr[(i) *n + (j)]
+  #define pmatrix(i, j) (arr + (i * n + j))
+    int    i, j, k;
+    float  tmp;
+    __m256 vaik, vakj, vaij, vx;
+  #pragma omp parallel num_threads(NUM_THREADS), \
+    private(i, j, k, tmp, vaik, vakj, vaij, vx)
+    for (k = 0; k < n; ++k) {
+      tmp = matrix(k, k);
+  #pragma omp for
+      for (j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / tmp;
       matrix(k, k) = 1.0;
-      for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
-        sem_post(sem_workerstart + t_id);
-      for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) sem_wait(&sem_main);
-    }
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
-      pthread_join(handle[t_id], nullptr);
-    sem_destroy(&sem_main);
-    for (int i = 0; i < MAX_SUB_THREAD; ++i) sem_destroy(sem_workerstart + i);
-  }
-  #undef matrix
-}
-\end{lstlisting}
-
-% Please add the following required packages to your document preamble:
-% \usepackage{graphicx}
-\begin{table}[]
-  \centering
-  \resizebox{\textwidth}{!}{%
-  \begin{tabular}{|llll|}
-  \hline
-  Scale       & Reperat times & x86 semaphore (s) & arm semaphore (s) \\ \hline
-  8 × 8       & 100           & 0.000220605390    & 0.000414891100    \\ \hline
-  16 × 16     & 50            & 0.000319653680    & 0.000546852800    \\ \hline
-  32 × 32     & 50            & 0.000513098020    & 0.000823440200    \\ \hline
-  64 × 64     & 20            & 0.000966301100    & 0.001490467500    \\ \hline
-  128 × 128   & 15            & 0.001879047067    & 0.002734098000    \\ \hline
-  256 × 256   & 10            & 0.003608040400    & 0.005964593000    \\ \hline
-  512 × 512   & 10            & 0.011124012800    & 0.018504859000    \\ \hline
-  1024 × 1024 & 5             & 0.050837437000    & 0.077263730000    \\ \hline
-  2048 × 2048 & 3             & 1.160066842000    & 0.541380500000    \\ \hline
-  4096 × 4096 & 1             & 11.558711337000   & 5.892652880000    \\ \hline
-  \end{tabular}%
-  }
-  \caption{所有平台线程池+信号量同步+主线程执行除法结果对比}
-  \label{tab:sem}
-\end{table}
-
-\begin{lstlisting}[title=线程池+信号量同步+工作线程执行除法,frame=trbl,language={C++}]
-  #define matrix(i, j) arr[(i) *n + (j)]
-
-  #define MAX_SUB_THREAD 7
-
-  int    n;
-  float* arr;
-
-  struct thread_param_t {
-    int t_id;
-  };
-
-  sem_t          sem_leader;
-  sem_t          sem_div[MAX_SUB_THREAD - 1];
-  sem_t          sem_elim[MAX_SUB_THREAD - 1];
-  pthread_t      handle[MAX_SUB_THREAD];
-  thread_param_t param[MAX_SUB_THREAD];
-
-  void* thread_func(void* param) {
-    auto p    = (thread_param_t*) param;
-    auto t_id = p->t_id;
-    for (int k = 0; k < n; ++k) {
-      if (t_id == 0) {
-        for (int j = k + 1; j < n; ++j)
-          matrix(k, j) = matrix(k, j) / matrix(k, k);
-        matrix(k, k) = 1.0;
-      } else sem_wait(sem_div + t_id - 1);
-      if (t_id == 0)
-        for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) sem_post(sem_div + i);
-      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
-        for (int j = k + 1; j < n; ++j)
-          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
-        matrix(i, k) = 0.0;
-      }
-      if (t_id == 0) {
-        for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) sem_wait(&sem_leader);
-        for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) sem_post(sem_elim + i);
-      } else {
-        sem_post(&sem_leader);
-        sem_wait(sem_elim + t_id - 1);
-      }
-    }
-    pthread_exit(nullptr);
-  }
-
-  void func(int& ans, float arr[], int n) {
-    ::n   = n;
-    ::arr = arr;
-    sem_init(&sem_leader, 0, 0);
-    for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) {
-      sem_init(sem_div + i, 0, 0);
-      sem_init(sem_elim + i, 0, 0);
-    }
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
-      param[t_id].t_id = t_id;
-      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
-    }
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
-      pthread_join(handle[t_id], nullptr);
-    sem_destroy(&sem_leader);
-    for (int i = 0; i < MAX_SUB_THREAD - 1; ++i) {
-      sem_destroy(sem_div + i);
-      sem_destroy(sem_elim + i);
-    }
-  }
-  #undef matrix
-\end{lstlisting}
-
-% Please add the following required packages to your document preamble:
-% \usepackage{graphicx}
-\begin{table}[]
-  \centering
-  \resizebox{\textwidth}{!}{%
-  \begin{tabular}{|llll|}
-  \hline
-  Scale       & Reperat times & x86 semaphore all (s) & arm semaphore all (s) \\ \hline
-  8 × 8       & 100           & 0.000295141480        & 0.000451200400        \\ \hline
-  16 × 16     & 50            & 0.000439524060        & 0.000708521400        \\ \hline
-  32 × 32     & 50            & 0.000699135760        & 0.001197251400        \\ \hline
-  64 × 64     & 20            & 0.001294170900        & 0.001791016000        \\ \hline
-  128 × 128   & 15            & 0.002380586333        & 0.004017182667        \\ \hline
-  256 × 256   & 10            & 0.005267385000        & 0.009138907000        \\ \hline
-  512 × 512   & 10            & 0.013941518400        & 0.020430503000        \\ \hline
-  1024 × 1024 & 5             & 0.065091814800        & 0.088223814000        \\ \hline
-  2048 × 2048 & 3             & 1.268976019000        & 0.604317156667        \\ \hline
-  4096 × 4096 & 1             & 11.411054368000       & 5.209506790000        \\ \hline
-  \end{tabular}%
-  }
-  \caption{所有平台线程池+信号量同步+工作线程执行除法结果对比}
-  \label{tab:sem-all}
-\end{table}
-
-\subsubsection{使用 Pthreads 线程池和 barrier 栅栏同步以及 NEON 指令集并行化加速}
-
-\begin{lstlisting}[title=线程池+栅栏同步+工作线程执行除法,frame=trbl,language={C++}]
-  #define matrix(i, j) arr[(i) *n + (j)]
-
-  #define MAX_SUB_THREAD 7
-  
-  int    n;
-  float* arr;
-  
-  struct thread_param_t {
-    int t_id;
-  };
-  
-  pthread_barrier_t barrier_div;
-  pthread_barrier_t barrier_elim;
-  pthread_t         handle[MAX_SUB_THREAD];
-  thread_param_t    param[MAX_SUB_THREAD];
-  
-  void* thread_func(void* param) {
-    auto p    = (thread_param_t*) param;
-    auto t_id = p->t_id;
-    for (int k = 0; k < n; ++k) {
-      if (t_id == 0) {
-        for (int j = k + 1; j < n; ++j)
-          matrix(k, j) = matrix(k, j) / matrix(k, k);
-        matrix(k, k) = 1.0;
-      }
-  
-      pthread_barrier_wait(&barrier_div);
-  
-      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
-        for (int j = k + 1; j < n; ++j)
-          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
-        matrix(i, k) = 0.0;
-      }
-  
-      pthread_barrier_wait(&barrier_elim);
-    }
-    pthread_exit(nullptr);
-  }
-  
-  void func(int& ans, float arr[], int n) {
-    ::n   = n;
-    ::arr = arr;
-    pthread_barrier_init(&barrier_div, nullptr, MAX_SUB_THREAD);
-    pthread_barrier_init(&barrier_elim, nullptr, MAX_SUB_THREAD);
-  
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
-      param[t_id].t_id = t_id;
-      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
-    }
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
-      pthread_join(handle[t_id], nullptr);
-  
-    pthread_barrier_destroy(&barrier_div);
-    pthread_barrier_destroy(&barrier_elim);
-  }
-  #undef matrix
-}
-\end{lstlisting}
-
-
-\begin{lstlisting}[title=线程池 + 栅栏同步 + 工作线程执行除法 + NEON 指令集加速,frame=trbl,language={C++}]
-  #define matrix(i, j) arr[(i) *n + (j)]
-  #define pmatrix(i, j) (arr + ((i) * n + (j)))
-  
-  #define MAX_SUB_THREAD 7
-  
-  int    n;
-  float* arr;
-  
-  struct thread_param_t {
-    int t_id;
-  };
-  
-  pthread_barrier_t barrier_div;
-  pthread_barrier_t barrier_elim;
-  pthread_t         handle[MAX_SUB_THREAD];
-  thread_param_t    param[MAX_SUB_THREAD];
-  
-  void* thread_func(void* param) {
-    auto p    = (thread_param_t*) param;
-    auto t_id = p->t_id;
-    for (int k = 0; k < n; ++k) {
-      if (t_id == 0) {
-        auto vt = vdupq_n_f32(matrix(k, k));
-        int  j;
-        for (j = k + 1; j + 4 <= n; j += 4) {
-          auto va = vld1q_f32(pmatrix(k, j));
-          va      = vdivq_f32(va, vt);
-          vst1q_f32(pmatrix(k, j), va);
+  #pragma omp for
+      for (i = k + 1; i < n; ++i) {
+        vaik =
+          _mm256_set_ps(matrix(i, k), matrix(i, k), matrix(i, k), matrix(i, k),
+                        matrix(i, k), matrix(i, k), matrix(i, k), matrix(i, k));
+        for (j = k + 1; j + 8 <= n; j += 8) {
+          vakj = _mm256_loadu_ps(pmatrix(k, j));
+          vaij = _mm256_loadu_ps(pmatrix(i, j));
+          vx   = _mm256_mul_ps(vakj, vaik);
+          vaij = _mm256_sub_ps(vaij, vx);
+          _mm256_storeu_ps(pmatrix(i, j), vaij);
         }
-        for (; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
-        matrix(k, k) = 1.0;
+        tmp = matrix(i, k);
+        for (; j < n; ++j) matrix(i, j) = matrix(i, j) - tmp * matrix(k, j);
+        matrix(i, k) = 0;
       }
-  
-      pthread_barrier_wait(&barrier_div);
-  
-      for (int i = k + 1 + t_id; i < n; i += MAX_SUB_THREAD) {
-        auto vaik = vdupq_n_f32(matrix(i, k));
-        int  j;
+    }
+  #undef matrix
+  }
+\end{lstlisting}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|llll|}
+      \hline
+      Scale       & Reperat times & x86 OpenMP 4 threads AVX (s) & x86 OpenMP 8 threads AVX (s) \\ \hline
+      8 × 8       & 100           & 0.000009138760               & 0.000011101290               \\ \hline
+      16 × 16     & 50            & 0.000015564840               & 0.000018825000               \\ \hline
+      32 × 32     & 50            & 0.000030945160               & 0.000039081760               \\ \hline
+      64 × 64     & 20            & 0.000067078900               & 0.000079877600               \\ \hline
+      128 × 128   & 15            & 0.000156863733               & 0.000172293600               \\ \hline
+      256 × 256   & 10            & 0.000542010200               & 0.000501830600               \\ \hline
+      512 × 512   & 10            & 0.001857792100               & 0.001428114600               \\ \hline
+      1024 × 1024 & 5             & 0.015659546200               & 0.011327669000               \\ \hline
+      2048 × 2048 & 3             & 1.033535896333               & 0.737357611000               \\ \hline
+      4096 × 4096 & 1             & 10.552043834000              & 10.662585467000              \\ \hline
+    \end{tabular}%
+  }
+  \caption{x86 平台 OpenMP + AVX 结果对比}
+  \label{tab:openmpavx}
+\end{table}
+
+\subsubsection{使用 OpenMP 及 SIMD 在 arm 平台 4、8 线程并行化加速}
+
+\begin{lstlisting}[title=arm OpenMP + NEON 并行化加速,frame=trbl,language={C++}]
+  #define NUM_THREADS 8
+
+  void func(int& ans, float arr[], int n) {
+  #define matrix(i, j)  arr[(i) *n + (j)]
+  #define pmatrix(i, j) (arr + (i * n + j))
+    int         i, j, k;
+    float       tmp;
+    float32x4_t vaik, vakj, vaij, vx;
+  #pragma omp parallel num_threads(NUM_THREADS), \
+    private(i, j, k, tmp, vaik, vakj, vaij, vx)
+    for (k = 0; k < n; ++k) {
+      tmp = matrix(k, k);
+  #pragma omp for
+      for (j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / tmp;
+      matrix(k, k) = 1.0;
+  #pragma omp for
+      for (i = k + 1; i < n; ++i) {
+        vaik = vdupq_n_f32(matrix(i, k));
         for (j = k + 1; j + 4 <= n; j += 4) {
-          auto vakj = vld1q_f32(pmatrix(k, j));
-          auto vaij = vld1q_f32(pmatrix(i, j));
-          auto vx   = vmulq_f32(vakj, vaik);
-          vaij      = vsubq_f32(vaij, vx);
+          vakj = vld1q_f32(pmatrix(k, j));
+          vaij = vld1q_f32(pmatrix(i, j));
+          vx   = vmulq_f32(vakj, vaik);
+          vaij = vsubq_f32(vaij, vx);
           vst1q_f32(pmatrix(i, j), vaij);
         }
-        for (; j < n; ++j)
-          matrix(i, j) = matrix(i, j) - matrix(i, k) * matrix(k, j);
+        tmp = matrix(i, k);
+        for (; j < n; ++j) matrix(i, j) = matrix(i, j) - tmp * matrix(k, j);
         matrix(i, k) = 0;
       }
-  
-      pthread_barrier_wait(&barrier_elim);
     }
-    pthread_exit(nullptr);
-  }
-  
-  void func(int& ans, float arr[], int n) {
-    ::n   = n;
-    ::arr = arr;
-    pthread_barrier_init(&barrier_div, nullptr, MAX_SUB_THREAD);
-    pthread_barrier_init(&barrier_elim, nullptr, MAX_SUB_THREAD);
-  
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id) {
-      param[t_id].t_id = t_id;
-      pthread_create(handle + t_id, nullptr, thread_func, param + t_id);
-    }
-    for (int t_id = 0; t_id < MAX_SUB_THREAD; ++t_id)
-      pthread_join(handle[t_id], nullptr);
-  
-    pthread_barrier_destroy(&barrier_div);
-    pthread_barrier_destroy(&barrier_elim);
-  }
   #undef matrix
-  #undef pmatrix
+}
 \end{lstlisting}
 
 % Please add the following required packages to your document preamble:
@@ -666,28 +430,28 @@ void func(int& ans, float arr[], int n) {
 \begin{table}[]
   \centering
   \resizebox{\textwidth}{!}{%
-  \begin{tabular}{|lllll|}
-  \hline
-  Scale       & Reperat times & x86 barrier (s) & arm barrier (s) & arm barrier with neon (s) \\ \hline
-  8 × 8       & 100           & 0.000356697420  & 0.000430526600  & 0.000414370700            \\ \hline
-  16 × 16     & 50            & 0.000631893380  & 0.000631723800  & 0.000546980800            \\ \hline
-  32 × 32     & 50            & 0.000695531360  & 0.000821696600  & 0.000801270200            \\ \hline
-  64 × 64     & 20            & 0.001590516150  & 0.001415785500  & 0.001367928500            \\ \hline
-  128 × 128   & 15            & 0.003217344067  & 0.003097213333  & 0.002935288000            \\ \hline
-  256 × 256   & 10            & 0.004891007500  & 0.005816473000  & 0.005479598000            \\ \hline
-  512 × 512   & 10            & 0.013557604400  & 0.017091460000  & 0.015217643000            \\ \hline
-  1024 × 1024 & 5             & 0.055628581000  & 0.082351834000  & 0.080288012000            \\ \hline
-  2048 × 2048 & 3             & 1.297545969000  & 0.503372826667  & 0.455167490000            \\ \hline
-  4096 × 4096 & 1             & 12.573134918000 & 5.017878950000  & 4.582658000000            \\ \hline
-  \end{tabular}%
+    \begin{tabular}{|llll|}
+      \hline
+      Scale       & Reperat times & arm OpenMP 4 threads NEON (s) & arm OpenMP 8 threads NEON (s) \\ \hline
+      8 × 8       & 100           & 0.000096044400                & 0.000150384800                \\ \hline
+      16 × 16     & 50            & 0.000188844800                & 0.000279533400                \\ \hline
+      32 × 32     & 50            & 0.000385884200                & 0.000604768200                \\ \hline
+      64 × 64     & 20            & 0.000774845500                & 0.001232058000                \\ \hline
+      128 × 128   & 15            & 0.001617558000                & 0.002336769333                \\ \hline
+      256 × 256   & 10            & 0.003750217000                & 0.005148563000                \\ \hline
+      512 × 512   & 10            & 0.011932396000                & 0.012737347000                \\ \hline
+      1024 × 1024 & 5             & 0.062839944000                & 0.043704944000                \\ \hline
+      2048 × 2048 & 3             & 0.504436153333                & 0.303472556667                \\ \hline
+      4096 × 4096 & 1             & 7.025737910000                & 4.243570140000                \\ \hline
+    \end{tabular}%
   }
-  \caption{所有平台线程池 + 栅栏同步 + 工作线程执行除法 + SIMD 优化结果对比}
-  \label{tab:barrier}
-  \end{table}
+  \caption{arm 平台 OpenMP + NEON 结果对比}
+  \label{tab:openmpneon}
+\end{table}
 
 \section{实验结果分析}
 
-观察比较表 \ref{tab:ord}、\ref{tab:dynamic}、\ref{tab:sem}、\ref{tab:sem-all}、\ref{tab:barrier} 
+观察比较表 \ref{tab:ord}、\ref{tab:dynamic}、\ref{tab:sem}、\ref{tab:sem-all}、\ref{tab:barrier}
 可以发现使用线程池加信号量或者栅栏同步多线程的方式，在 arm 平台可以大幅提升性能，小数据量下效果微弱甚至不如平凡算法，但是大数据量有成倍提升。
 
 4096 × 4096 数据规模 arm 平台下普通信号量同步用时 5.892652880000 s，平凡算法用时 13.088073440000 s，加速比 2.221083391；
@@ -705,20 +469,20 @@ void func(int& ans, float arr[], int n) {
 \begin{table}[]
   \centering
   \resizebox{\textwidth}{!}{%
-  \begin{tabular}{|lllllll|}
-  \hline
-  Scale       & Reperat times & x86 ordinary (s) & x86 dynamic (s)  & x86 semaphore (s) & x86 semaphore all (s) & x86 barrier (s) \\ \hline
-  8 × 8       & 100           & 0.000001330460   & 0.000408343660   & 0.000220605390    & 0.000295141480        & 0.000356697420  \\ \hline
-  16 × 16     & 50            & 0.000001706920   & 0.001760123900   & 0.000319653680    & 0.000439524060        & 0.000631893380  \\ \hline
-  32 × 32     & 50            & 0.000003640080   & 0.007970805160   & 0.000513098020    & 0.000699135760        & 0.000695531360  \\ \hline
-  64 × 64     & 20            & 0.000015253300   & 0.031911559450   & 0.000966301100    & 0.001294170900        & 0.001590516150  \\ \hline
-  128 × 128   & 15            & 0.000098880800   & 0.130038008533   & 0.001879047067    & 0.002380586333        & 0.003217344067  \\ \hline
-  256 × 256   & 10            & 0.000716408500   & 0.515502232000   & 0.003608040400    & 0.005267385000        & 0.004891007500  \\ \hline
-  512 × 512   & 10            & 0.006722607300   & 2.105457739200   & 0.011124012800    & 0.013941518400        & 0.013557604400  \\ \hline
-  1024 × 1024 & 5             & 0.064893815400   & 8.558513793600   & 0.050837437000    & 0.065091814800        & 0.055628581000  \\ \hline
-  2048 × 2048 & 3             & 1.400074583333   & 33.120794944000  & 1.160066842000    & 1.268976019000        & 1.297545969000  \\ \hline
-  4096 × 4096 & 1             & 10.705585484000  & 139.134070615000 & 11.558711337000   & 11.411054368000       & 12.573134918000 \\ \hline
-  \end{tabular}%
+    \begin{tabular}{|lllllll|}
+      \hline
+      Scale       & Reperat times & x86 ordinary (s) & x86 dynamic (s)  & x86 semaphore (s) & x86 semaphore all (s) & x86 barrier (s) \\ \hline
+      8 × 8       & 100           & 0.000001330460   & 0.000408343660   & 0.000220605390    & 0.000295141480        & 0.000356697420  \\ \hline
+      16 × 16     & 50            & 0.000001706920   & 0.001760123900   & 0.000319653680    & 0.000439524060        & 0.000631893380  \\ \hline
+      32 × 32     & 50            & 0.000003640080   & 0.007970805160   & 0.000513098020    & 0.000699135760        & 0.000695531360  \\ \hline
+      64 × 64     & 20            & 0.000015253300   & 0.031911559450   & 0.000966301100    & 0.001294170900        & 0.001590516150  \\ \hline
+      128 × 128   & 15            & 0.000098880800   & 0.130038008533   & 0.001879047067    & 0.002380586333        & 0.003217344067  \\ \hline
+      256 × 256   & 10            & 0.000716408500   & 0.515502232000   & 0.003608040400    & 0.005267385000        & 0.004891007500  \\ \hline
+      512 × 512   & 10            & 0.006722607300   & 2.105457739200   & 0.011124012800    & 0.013941518400        & 0.013557604400  \\ \hline
+      1024 × 1024 & 5             & 0.064893815400   & 8.558513793600   & 0.050837437000    & 0.065091814800        & 0.055628581000  \\ \hline
+      2048 × 2048 & 3             & 1.400074583333   & 33.120794944000  & 1.160066842000    & 1.268976019000        & 1.297545969000  \\ \hline
+      4096 × 4096 & 1             & 10.705585484000  & 139.134070615000 & 11.558711337000   & 11.411054368000       & 12.573134918000 \\ \hline
+    \end{tabular}%
   }
   \caption{x86 平台所有结果对比}
   \label{tab:x86}
@@ -729,20 +493,20 @@ void func(int& ans, float arr[], int n) {
 \begin{table}[]
   \centering
   \resizebox{\textwidth}{!}{%
-  \begin{tabular}{|llllllll|}
-  \hline
-  Scale       & Reperat times & arm ordinary (s) & arm dynamic (s)  & arm semaphore (s) & arm semaphore all (s) & arm barrier (s) & arm barrier with neon (s) \\ \hline
-  8 × 8       & 100           & 0.000000525400   & 0.001069426000   & 0.000414891100    & 0.000451200400        & 0.000430526600  & 0.000414370700            \\ \hline
-  16 × 16     & 50            & 0.000001666000   & 0.004892212000   & 0.000546852800    & 0.000708521400        & 0.000631723800  & 0.000546980800            \\ \hline
-  32 × 32     & 50            & 0.000007127000   & 0.020191436600   & 0.000823440200    & 0.001197251400        & 0.000821696600  & 0.000801270200            \\ \hline
-  64 × 64     & 20            & 0.000037566500   & 0.080842077000   & 0.001490467500    & 0.001791016000        & 0.001415785500  & 0.001367928500            \\ \hline
-  128 × 128   & 15            & 0.000231574000   & 0.338396283333   & 0.002734098000    & 0.004017182667        & 0.003097213333  & 0.002935288000            \\ \hline
-  256 × 256   & 10            & 0.001820356000   & 1.318216261000   & 0.005964593000    & 0.009138907000        & 0.005816473000  & 0.005479598000            \\ \hline
-  512 × 512   & 10            & 0.014974396000   & 5.282467893000   & 0.018504859000    & 0.020430503000        & 0.017091460000  & 0.015217643000            \\ \hline
-  1024 × 1024 & 5             & 0.135511226000   & 21.790754608000  & 0.077263730000    & 0.088223814000        & 0.082351834000  & 0.080288012000            \\ \hline
-  2048 × 2048 & 3             & 1.101775523333   & 85.470935310000  & 0.541380500000    & 0.604317156667        & 0.503372826667  & 0.455167490000            \\ \hline
-  4096 × 4096 & 1             & 13.088073440000  & 353.288384510000 & 5.892652880000    & 5.209506790000        & 5.017878950000  & 4.582658000000            \\ \hline
-  \end{tabular}%
+    \begin{tabular}{|llllllll|}
+      \hline
+      Scale       & Reperat times & arm ordinary (s) & arm dynamic (s)  & arm semaphore (s) & arm semaphore all (s) & arm barrier (s) & arm barrier with neon (s) \\ \hline
+      8 × 8       & 100           & 0.000000525400   & 0.001069426000   & 0.000414891100    & 0.000451200400        & 0.000430526600  & 0.000414370700            \\ \hline
+      16 × 16     & 50            & 0.000001666000   & 0.004892212000   & 0.000546852800    & 0.000708521400        & 0.000631723800  & 0.000546980800            \\ \hline
+      32 × 32     & 50            & 0.000007127000   & 0.020191436600   & 0.000823440200    & 0.001197251400        & 0.000821696600  & 0.000801270200            \\ \hline
+      64 × 64     & 20            & 0.000037566500   & 0.080842077000   & 0.001490467500    & 0.001791016000        & 0.001415785500  & 0.001367928500            \\ \hline
+      128 × 128   & 15            & 0.000231574000   & 0.338396283333   & 0.002734098000    & 0.004017182667        & 0.003097213333  & 0.002935288000            \\ \hline
+      256 × 256   & 10            & 0.001820356000   & 1.318216261000   & 0.005964593000    & 0.009138907000        & 0.005816473000  & 0.005479598000            \\ \hline
+      512 × 512   & 10            & 0.014974396000   & 5.282467893000   & 0.018504859000    & 0.020430503000        & 0.017091460000  & 0.015217643000            \\ \hline
+      1024 × 1024 & 5             & 0.135511226000   & 21.790754608000  & 0.077263730000    & 0.088223814000        & 0.082351834000  & 0.080288012000            \\ \hline
+      2048 × 2048 & 3             & 1.101775523333   & 85.470935310000  & 0.541380500000    & 0.604317156667        & 0.503372826667  & 0.455167490000            \\ \hline
+      4096 × 4096 & 1             & 13.088073440000  & 353.288384510000 & 5.892652880000    & 5.209506790000        & 5.017878950000  & 4.582658000000            \\ \hline
+    \end{tabular}%
   }
   \caption{arm 平台所有结果对比}
   \label{tab:arm}
