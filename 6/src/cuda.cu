@@ -13,8 +13,15 @@ __global__ void division_kernel(float arr[], int n, int k) {
 }
 
 __global__ void eliminate_kernel(float arr[], int n, int k) {
-  auto tid = blockDim.x * blockIdx.x + threadIdx.x;
-  if (tid == 0) matrix(k, k) = 1.0;
+  auto tx = blockDim.x * blockIdx.x + threadIdx.x;
+  if (tx == 0) matrix(k, k) = 1.0;
+  for (auto row = k + 1 + blockIdx.x; row < n; row += gridDim.x) {
+    auto tid = threadIdx.x;
+    for (auto col = k + 1 + tid; col < n; col += blockDim.x)
+      matrix(row, col) -= matrix(row, k) * matrix(k, col);
+    __syncthreads();
+    if (tid == 0) matrix(row, k) = 0;
+  }
 }
 
 void func(int& ans, float arr[], int n) {
@@ -26,15 +33,15 @@ void func(int& ans, float arr[], int n) {
     cerr << "cudaMemcpyHostToDevice failed" << endl;
 
   for (int k = 0; k < n; ++k) {
-    auto rest = n - k;
+    auto rest = n - k - 1;
     dim3 grid(std::ceil(rest / 1024.0));
     dim3 block(1024);
     division_kernel<<<grid, block>>>(gpu_arr, n, k);
     cudaDeviceSynchronize();
     if (auto ret = cudaGetLastError(); ret != cudaSuccess)
       cerr << "division kernel failed: " << cudaGetErrorString(ret) << endl;
-    matrix(k, k) = 1.0;
-    eliminate_kernel<<<grid, block>>>(gpu_arr, n, k);
+    dim3 eliminate_grid(32);
+    eliminate_kernel<<<eliminate_grid, block>>>(gpu_arr, n, k);
     cudaDeviceSynchronize();
     if (auto ret = cudaGetLastError(); ret != cudaSuccess)
       cerr << "eliminate kernel failed: " << cudaGetErrorString(ret) << endl;
