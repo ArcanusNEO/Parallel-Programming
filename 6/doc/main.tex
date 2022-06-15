@@ -189,7 +189,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 代码如下：
 
-\begin{lstlisting}[title=测试数据集生成器,frame=trbl,language={C++}]
+\begin{lstlisting}[frame=trbl,language={C++}]
   uniform_real_distribution<float> dist(0, 100);
   mt19937       mt(12345687);
   int           n;
@@ -202,7 +202,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 \subsection{实验环境和相关配置}
 
-实验在本地 Arch Linux x86\_64 平台完成，使用 cmake 构建项目；
+实验在本地 Arch Linux x86\_64 平台完成，使用 cmake 构建项目，均开启 O3 加速；
 
 \begin{itemize}
   \item nVIDIA GPU 型号：NVIDIA GeForce RTX 2060 with Max-Q Design
@@ -218,8 +218,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 使用 $\#define\ matrix(i, j)\ arr[(i) * n + (j)]$ 宏，增强可读性；
 
-\begin{lstlisting}[title=平凡算法,frame=trbl,language={C++}]
-#define matrix(i, j) arr[(i) * n + (j)]
+\begin{lstlisting}[frame=trbl,language={C++}]
 void func(int& ans, float arr[], int n) {
   for (int k = 0; k < n; ++k) {
     for (int j = k + 1; j < n; ++j) matrix(k, j) = matrix(k, j) / matrix(k, k);
@@ -230,10 +229,132 @@ void func(int& ans, float arr[], int n) {
       matrix(i, k) = 0;
     }
   }
-#undef matrix
 }
 \end{lstlisting}
 
+\subsubsection{CUDA 加速算法}
+对于访存，这里使用了基本的内存空间分配方式，即在 CPU 端给数据分配好内存空间并初始化以后，在 GPU 端对应地分配显存空间，然后显式地调用数据传输的接口将 CPU 端的数据传输至 GPU 端；最后，核函数执行完毕后，还需要把计算好的数据再从 GPU 端传输回来。
+
+对于任务划分，使用了最简单直观的任务划分方法：除法和消去部分串行执行，分别编写两个核函数。
+
+对于除法部分，每个线程负责第 K 次循环中单独一列的计算，因为通过 cudaDeviceProp::maxThreadsPerBlock 可以发现在我的显卡上每个线程块的最大线程数为 1024,所以对于大于 1024 × 1024 的矩阵可以分成多个块并行执行。
+
+\begin{lstlisting}[frame=trbl,language={C++}]
+__global__ void division_kernel(float arr[], int n, int k) {
+  auto tid = blockDim.x * blockIdx.x + threadIdx.x;
+  if (k < tid && tid < n) matrix(k, tid) /= matrix(k, k);
+}
+\end{lstlisting}
+
+对于消去部分，在第 k 次循环中，对第 k + 1 行至最后一行进行消去，每一行计算完成后需要将这一行的第 k 列设为 0，矩阵最后变为一个上三角矩阵。对于同步问题，在核函数内部调用 \_\_syncthreads() 接口来同步块内线程，但是 GPU 的硬件架构导致的没有接口用于块间同步，所以为了保证正确同步的同时最大化利用 GPU 的并行性，我们让一个线程块负责固定一行的计算任务，块内的线程分别负责这一行的不同位置上的元素的运算任务，最后进行块内同步。
+
+\begin{lstlisting}[frame=trbl,language={C++}]
+__global__ void eliminate_kernel(float arr[], int n, int k) {
+  auto tx = blockDim.x * blockIdx.x + threadIdx.x;
+  if (tx == 0) matrix(k, k) = 1.0;
+  for (auto row = k + 1 + blockIdx.x; row < n; row += gridDim.x) {
+    auto tid = threadIdx.x;
+    for (auto col = k + 1 + tid; col < n; col += blockDim.x)
+      matrix(row, col) -= matrix(row, k) * matrix(k, col);
+    __syncthreads();
+    if (tid == 0) matrix(row, k) = 0;
+  }
+}
+\end{lstlisting}
+
+在外层通用驱动程序 func 中，我们需要做的工作如下：
+\begin{enumerate}
+  \item 分配合适大小的显存
+  \item 把内存中的矩阵复制进显存
+  \item 对外层循环的每一轮确定合适的线程块大小和线程块数量
+  \item 在外层循环的每一轮中依次调用 division\_kernel 和 eliminate\_kernel 函数并同步所有线程
+  \item 把显存中的结果复制回内存，释放显存
+\end{enumerate}
+
+\begin{lstlisting}[frame=trbl,language={C++}]
+void func(int& ans, float arr[], int n) {
+  float* gpu_arr;
+  auto   siz = sizeof(float) * n * n;
+  if (cudaMalloc(&gpu_arr, siz) != cudaSuccess)
+    cerr << "cudaMalloc failed" << endl;
+  if (cudaMemcpy(gpu_arr, arr, siz, cudaMemcpyHostToDevice) != cudaSuccess)
+    cerr << "cudaMemcpyHostToDevice failed" << endl;
+
+  for (int k = 0; k < n; ++k) {
+    auto rest = n - k - 1;
+    dim3 grid(std::max(std::ceil(rest / 1024.0), 1.0));
+    dim3 block(1024);
+    division_kernel<<<grid, block>>>(gpu_arr, n, k);
+    cudaDeviceSynchronize();
+    if (auto ret = cudaGetLastError(); ret != cudaSuccess)
+      cerr << "division kernel failed: " << cudaGetErrorString(ret) << endl;
+    dim3 eliminate_grid(32);
+    eliminate_kernel<<<eliminate_grid, block>>>(gpu_arr, n, k);
+    cudaDeviceSynchronize();
+    if (auto ret = cudaGetLastError(); ret != cudaSuccess)
+      cerr << "eliminate kernel failed: " << cudaGetErrorString(ret) << endl;
+  }
+  if (cudaMemcpy(arr, gpu_arr, siz, cudaMemcpyDeviceToHost) != cudaSuccess)
+    cerr << "cudaMemcpyDeviceToHost failed" << endl;
+  cudaFree(gpu_arr);
+}
+\end{lstlisting}
+
+\subsection{结果分析}
+
+使用 GPU 加速需要考虑到浮点数精度的问题，在 solve.cc 文件内有一段被注释的代码控制打印结果矩阵，四舍五入保留 4 位小数。比较 8 × 8 矩阵的计算结果图 \ref{pic:ord8} 和 \ref{pic:cuda8} 发现二者结果完全一致；比较 16 × 16 矩阵的计算结果图 \ref{pic:ord16} 和 \ref{pic:cuda16} 发现某些元素最后一位小数略有差异。
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{ord8.png}
+  \caption{CPU 平凡算法 8 × 8 矩阵结果}
+  \label{pic:ord8}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{cuda8.png}
+  \caption{GPU CUDA 加速算法 8 × 8 矩阵结果}
+  \label{pic:cuda8}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{ord16.png}
+  \caption{CPU 平凡算法 16 × 16 矩阵结果}
+  \label{pic:ord16}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{cuda16.png}
+  \caption{GPU CUDA 加速算法 16 × 16 矩阵结果}
+  \label{pic:cuda16}
+\end{figure}
+
+经过测试得到表 \ref{tab:ord-cuda} 发现大数据规模下 CUDA 加速效果显著，有十余倍性能提升。
+
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|ll|ll|}
+      \hline
+      Scale       & Reperat times & x86 ordinary (s) & x86 CUDA (s)   \\ \hline
+      8×8         & 100           & 0.000001330460   & 0.000202092680 \\ \hline
+      16 × 16     & 50            & 0.000001706920   & 0.000348178360 \\ \hline
+      32 × 32     & 50            & 0.000003640080   & 0.000486327180 \\ \hline
+      64 × 64     & 20            & 0.000015253300   & 0.000934846400 \\ \hline
+      128 × 128   & 15            & 0.000098880800   & 0.002263211200 \\ \hline
+      256 × 256   & 10            & 0.000716408500   & 0.003708655900 \\ \hline
+      512 × 512   & 10            & 0.006722607300   & 0.008892275300 \\ \hline
+      1024 × 1024 & 5             & 0.064893815400   & 0.054395600600 \\ \hline
+      2048 × 2048 & 3             & 1.400074583333   & 0.240155499000 \\ \hline
+      4096 × 4096 & 1             & 10.705585484000  & 1.255606927000 \\ \hline
+    \end{tabular}%
+  }
+  \caption{平凡算法和 CUDA 加速算法运行时间}
+  \label{tab:ord-cuda}
+\end{table}
 
 % \newpage
 
