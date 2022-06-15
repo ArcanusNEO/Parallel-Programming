@@ -34,7 +34,7 @@ void func(int& ans, float arr[], int n) {
 
   for (int k = 0; k < n; ++k) {
     auto rest = n - k - 1;
-    dim3 grid(std::ceil(rest / 1024.0));
+    dim3 grid(std::max(std::ceil(rest / 1024.0), 1.0));
     dim3 block(1024);
     division_kernel<<<grid, block>>>(gpu_arr, n, k);
     cudaDeviceSynchronize();
