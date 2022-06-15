@@ -21,4 +21,9 @@ link_directories(lib)
 add_library(main SHARED src/main.cc)
 add_library(solve SHARED src/solve.cc)
 add_executable(gen-data src/gen-data.cc)
+
 add_executable(ordinary src/ordinary.cc)
+target_link_libraries(ordinary PRIVATE main solve)
+
+add_executable(cuda src/cuda.cu)
+target_link_libraries(cuda PRIVATE main solve)
