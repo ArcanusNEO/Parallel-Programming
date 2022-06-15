@@ -177,7 +177,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 观察高斯消去算法，注意到伪代码第 4，5 行第一个内嵌循环中的$A[k, j] := A[k, j]/A[k, k]$以及伪代码第$8，9，10$行双层$for$循环中的$A[i, j] := A[i, j] − A[i, k]×A[k, j]$都是可以进行向量化的循环。可以通过 CUDA 对这两步进行并行优化。
 
-\section{CUDA 算法设计}
+\section{算法设计}
 
 源码链接：
 \url{https://github.com/ArcanusNEO/Parallel-Programming/tree/master/6}
@@ -210,9 +210,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
   \item CUDA 版本：CUDA Version: 11.7
 \end{itemize}
 
-\subsection{算法设计}
-
-\subsubsection{默认平凡算法}
+\subsection{默认平凡算法}
 
 使用一维数组模拟矩阵，避免改变矩阵大小时第二维不方便调整、必须设成最大值的问题，可以减少 cache 失效；
 
@@ -232,7 +230,7 @@ void func(int& ans, float arr[], int n) {
 }
 \end{lstlisting}
 
-\subsubsection{CUDA 加速算法}
+\subsection{CUDA 加速算法}
 对于访存，这里使用了基本的内存空间分配方式，即在 CPU 端给数据分配好内存空间并初始化以后，在 GPU 端对应地分配显存空间，然后显式地调用数据传输的接口将 CPU 端的数据传输至 GPU 端；最后，核函数执行完毕后，还需要把计算好的数据再从 GPU 端传输回来。
 
 对于任务划分，使用了最简单直观的任务划分方法：除法和消去部分串行执行，分别编写两个核函数。
@@ -300,7 +298,7 @@ void func(int& ans, float arr[], int n) {
 }
 \end{lstlisting}
 
-\subsection{结果分析}
+\section{结果分析}
 
 使用 GPU 加速需要考虑到浮点数精度的问题，在 solve.cc 文件内有一段被注释的代码控制打印结果矩阵，四舍五入保留 4 位小数。比较 8 × 8 矩阵的计算结果图 \ref{pic:ord8} 和 \ref{pic:cuda8} 发现二者结果完全一致；比较 16 × 16 矩阵的计算结果图 \ref{pic:ord16} 和 \ref{pic:cuda16} 发现某些元素最后一位小数略有差异。
 
