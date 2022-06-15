@@ -177,7 +177,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 观察高斯消去算法，注意到伪代码第 4，5 行第一个内嵌循环中的$A[k, j] := A[k, j]/A[k, k]$以及伪代码第$8，9，10$行双层$for$循环中的$A[i, j] := A[i, j] − A[i, k]×A[k, j]$都是可以进行向量化的循环。可以通过 CUDA 对这两步进行并行优化。
 
-\section{OpenMP 算法设计}
+\section{CUDA 算法设计}
 
 源码链接：
 \url{https://github.com/ArcanusNEO/Parallel-Programming/tree/master/6}
@@ -205,7 +205,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 实验在本地 Arch Linux x86\_64 平台完成，使用 cmake 构建项目；
 
 \begin{itemize}
-  \item nVIDIA GPU 型号：NVIDIA Corporation TU106M [GeForce RTX 2060 Max-Q]
+  \item nVIDIA GPU 型号：NVIDIA GeForce RTX 2060 with Max-Q Design
   \item 驱动版本：Driver Version: 515.48.07
   \item CUDA 版本：CUDA Version: 11.7
 \end{itemize}
