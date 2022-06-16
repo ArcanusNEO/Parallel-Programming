@@ -25,3 +25,8 @@ add_executable(gen-data src/gen-data.cc)
 
 add_executable(ordinary src/ordinary.cc)
 target_link_libraries(ordinary PRIVATE main solve)
+
+# set(MPI_EXECUTABLE_SUFFIX ".mpich")
+find_package(MPI REQUIRED)
+# add_definitions(-DOMPI_SKIP_MPICXX)
+# target_link_libraries(mpi PRIVATE MPI::MPI_C)
