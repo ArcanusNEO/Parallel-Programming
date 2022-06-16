@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.9.0)
-# set(CMAKE_C_COMPILER "/usr/local/bin/mpicc")
+cmake_minimum_required(VERSION 3.9.1)
 # set(CMAKE_C_COMPILER "/usr/local/bin/clang")
 # set(CMAKE_CXX_COMPILER "/usr/local/bin/clang++")
 # set(CMAKE_C_COMPILER "/usr/bin/aarch64-linux-gnu-gcc")
