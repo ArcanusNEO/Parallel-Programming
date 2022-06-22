@@ -1,18 +1,31 @@
+#include <mpi.h>
+
 #include "solve.hh"
 using namespace std;
 
 double _solve(int& ans, int T) {
+  int comm_sz;
+  int my_rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+  MPI_Bcast(&T, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
   int    n;
   double ret = 0;
 
-  cin >> n;
-  auto arr = (float*) aligned_alloc(32, n * n * sizeof(float));
-  auto bak = (float*) aligned_alloc(32, n * n * sizeof(float));
+  if (my_rank == 0) cin >> n;
+  MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-  for (int i = 0; i < n * n; ++i) cin >> bak[i];
+  auto   arr = (float*) aligned_alloc(32, n * n * sizeof(float));
+  float* bak = nullptr;
+  if (my_rank == 0) {
+    bak = (float*) aligned_alloc(32, n * n * sizeof(float));
+    for (int i = 0; i < n * n; ++i) cin >> bak[i];
+  }
   for (int _counter = 0; _counter < T; ++_counter) {
     ans = 0;
-    memcpy(arr, bak, sizeof(float) * n * n);
+    if (my_rank == 0) memcpy(arr, bak, sizeof(float) * n * n);
     auto t1 = chrono::high_resolution_clock::now();
     func(ans, arr, n);
     auto t2  = chrono::high_resolution_clock::now();
@@ -28,6 +41,6 @@ double _solve(int& ans, int T) {
   // #undef matrix
 
   free(arr);
-  free(bak);
+  if (bak != nullptr) free(bak);
   return ret;
 }

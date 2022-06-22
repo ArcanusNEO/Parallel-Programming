@@ -9,11 +9,13 @@ using namespace std;
 #define pmatrix(i, j) (arr + ((i) * (n) + (j)))
 #define prow(i)       (pmatrix(i, 0))
 
-void mpi_sub_func(float arr[], int n) {
+void func(int& ans, float arr[], int n) {
   int comm_sz;
   int my_rank;
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+  MPI_Bcast(arr, n * n, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
   int block_sz  = n / comm_sz;
   int row_begin = block_sz * my_rank;
@@ -33,36 +35,18 @@ void mpi_sub_func(float arr[], int n) {
       matrix(i, k) = 0;
     }
   }
-  // MPI_Barrier(MPI_COMM_WORLD);
-}
-
-void mpi_func() {
-  int n;
-  MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  auto arr = (float*) aligned_alloc(32, n * n * sizeof(float));
-  MPI_Bcast(arr, n * n, MPI_FLOAT, 0, MPI_COMM_WORLD);
-  mpi_sub_func(arr, n);
-  free(arr);
-}
-
-void func(int& ans, float arr[], int n) {
-  MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  MPI_Bcast(arr, n * n, MPI_FLOAT, 0, MPI_COMM_WORLD);
-  mpi_sub_func(arr, n);
-  // cout.precision(4);
-  // cout.setf(ios_base::fixed);
-  // for (int i = 0; i < n; ++i)
-  //   for (int j = 0; j < n; ++j) cout << matrix(i, j) << " \n"[j == n - 1];
 }
 
 signed main(int argc, char* argv[]) {
+  MPI_Init(&argc, &argv);
   int comm_sz;
   int my_rank;
-
-  MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  if (my_rank) mpi_func();
+
+  int ans = 0;
+  if (my_rank) _solve(ans, 0);
   else _main(argc, argv);
+
   MPI_Finalize();
 }

@@ -20,13 +20,14 @@ include_directories(inc)
 link_directories(lib)
 add_library(main SHARED src/main.cc)
 add_library(solve SHARED src/solve.cc)
+add_library(mpi-solve SHARED src/mpi-solve.cc)
 add_executable(gen-data src/gen-data.cc)
 
 add_executable(ordinary src/ordinary.cc)
 target_link_libraries(ordinary PRIVATE main solve)
 
 add_executable(mpi src/mpi.cc)
-target_link_libraries(mpi PRIVATE main solve)
+target_link_libraries(mpi PRIVATE main mpi-solve)
 
 add_executable(mpi-slow src/mpi-slow.cc)
 target_link_libraries(mpi-slow PRIVATE main solve)

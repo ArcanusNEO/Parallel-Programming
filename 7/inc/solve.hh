@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstring>
 #include <iostream>
 
 void   func(int& ans, float arr[], int n);
