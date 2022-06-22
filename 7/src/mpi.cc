@@ -26,7 +26,7 @@ void mpi_sub_func(float arr[], int n) {
     }
     MPI_Bcast(prow(k), n, MPI_FLOAT, my_rank, MPI_COMM_WORLD);
     int inner_block_sz  = (n - k - 1) / comm_sz;
-    int inner_row_begin = inner_block_sz * my_rank;
+    int inner_row_begin = k + 1 + inner_block_sz * my_rank;
     int inner_row_end =
       (my_rank + 1 == comm_sz ? inner_row_begin + inner_block_sz : n);
     for (int i = inner_row_begin; i < inner_row_end; ++i) {
@@ -52,6 +52,10 @@ void func(int& ans, float arr[], int n) {
   MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(arr, n * n, MPI_FLOAT, 0, MPI_COMM_WORLD);
   mpi_sub_func(arr, n);
+  // cout.precision(4);
+  // cout.setf(ios_base::fixed);
+  // for (int i = 0; i < n; ++i)
+  //   for (int j = 0; j < n; ++j) cout << matrix(i, j) << " \n"[j == n - 1];
 }
 
 signed main(int argc, char* argv[]) {
@@ -61,10 +65,7 @@ signed main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  if (my_rank) {
-    mpi_func();
-  } else {
-    _main(argc, argv);
-  }
+  if (my_rank) mpi_func();
+  else _main(argc, argv);
   MPI_Finalize();
 }
