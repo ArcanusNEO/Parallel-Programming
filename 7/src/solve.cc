@@ -21,12 +21,14 @@ double _solve(int& ans, int T) {
     auto sec = chrono::duration_cast<chrono::duration<double>>(t2 - t1);
     ret += sec.count() / T;
   }
-#define matrix(i, j) arr[i * n + j]
+
+#define matrix(i, j) (arr[(i) * (n) + (j)])
   // cout.precision(4);
   // cout.setf(ios_base::fixed);
   // for (int i = 0; i < n; ++i)
   //   for (int j = 0; j < n; ++j) cout << matrix(i, j) << " \n"[j == n - 1];
 #undef matrix
+
   free(arr);
   free(bak);
   return ret;

@@ -1,7 +1,14 @@
+#include <bits/stdc++.h>
+#include <mpi.h>
+
 #include "main.hh"
 #include "solve.hh"
 using namespace std;
+
 #define matrix(i, j) (arr[(i) * (n) + (j)])
+
+void mpi_func() {
+}
 
 void func(int& ans, float arr[], int n) {
   for (int k = 0; k < n; ++k) {
@@ -15,7 +22,17 @@ void func(int& ans, float arr[], int n) {
   }
 }
 
-#undef matrix
 signed main(int argc, char* argv[]) {
-  return _main(argc, argv);
+  int comm_sz;
+  int my_rank;
+
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+  if (my_rank) {
+    mpi_func();
+  } else {
+    _main(argc, argv);
+  }
+  MPI_Finalize();
 }
