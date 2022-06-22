@@ -31,7 +31,7 @@ add_executable(mpi src/mpi.cc)
 target_link_libraries(mpi PRIVATE mpi-main mpi-solve)
 
 add_executable(mpi-slow src/mpi-slow.cc)
-target_link_libraries(mpi-slow PRIVATE main solve)
+target_link_libraries(mpi-slow PRIVATE mpi-main mpi-solve)
 
 # set(MPI_EXECUTABLE_SUFFIX ".mpich")
 find_package(MPI REQUIRED)
