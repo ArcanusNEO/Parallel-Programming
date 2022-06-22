@@ -9,8 +9,6 @@ double _solve(int& ans, int T) {
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-  MPI_Bcast(&T, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
   int    n;
   double ret = 0;
 
@@ -26,6 +24,7 @@ double _solve(int& ans, int T) {
   for (int _counter = 0; _counter < T; ++_counter) {
     ans = 0;
     if (my_rank == 0) memcpy(arr, bak, sizeof(float) * n * n);
+    MPI_Barrier(MPI_COMM_WORLD);
     auto t1 = chrono::high_resolution_clock::now();
     func(ans, arr, n);
     auto t2  = chrono::high_resolution_clock::now();

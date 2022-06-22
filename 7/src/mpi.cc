@@ -38,15 +38,5 @@ void func(int& ans, float arr[], int n) {
 }
 
 signed main(int argc, char* argv[]) {
-  MPI_Init(&argc, &argv);
-  int comm_sz;
-  int my_rank;
-  MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-
-  int ans = 0;
-  if (my_rank) _solve(ans, 0);
-  else _main(argc, argv);
-
-  MPI_Finalize();
+  _main(argc, argv);
 }

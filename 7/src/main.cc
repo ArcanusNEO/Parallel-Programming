@@ -28,9 +28,9 @@ signed _main(int argc, char* argv[]) {
   while (cin >> file >> count) counter[file] = count;
   ifs.close();
   for (const auto& filename_count : counter) {
-    const auto filename = filename_count.first;
-    auto       count    = filename_count.second;
-    file                = path + filename;
+    const auto& filename = filename_count.first;
+    auto        count    = filename_count.second;
+    file                 = path + filename;
     ifs.open(file);
     cin.rdbuf(ifs.rdbuf());
     int  ans      = 0;
