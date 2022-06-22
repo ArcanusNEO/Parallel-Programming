@@ -26,7 +26,8 @@ void func(int& ans, float arr[], int n) {
       for (int j = k + 1; j < n; ++j) matrix(k, j) /= matrix(k, k);
       matrix(k, k) = 1.0;
     }
-    int bc_rank = min(k / block_sz, comm_sz - 1);
+    int bc_rank = comm_sz - 1;
+    if (block_sz && k / block_sz < bc_rank) bc_rank = k / block_sz;
     MPI_Bcast(prow(k), n, MPI_FLOAT, bc_rank, MPI_COMM_WORLD);
     int inner_block_sz  = (n - k - 1) / comm_sz;
     int inner_row_begin = k + 1 + inner_block_sz * my_rank;
