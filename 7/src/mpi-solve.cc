@@ -33,10 +33,13 @@ double _solve(int& ans, int T) {
   }
 
   // #define matrix(i, j) (arr[(i) * (n) + (j)])
-  // cout.precision(4);
-  // cout.setf(ios_base::fixed);
-  // for (int i = 0; i < n; ++i)
-  //   for (int j = 0; j < n; ++j) cout << matrix(i, j) << " \n"[j == n - 1];
+  //   if (my_rank == 0) {
+  //     cout.precision(4);
+  //     cout.setf(ios_base::fixed);
+  //     for (int i = 0; i < n; ++i)
+  //       for (int j = 0; j < n; ++j) cout << matrix(i, j) << " \n"[j == n -
+  //       1];
+  //   }
   // #undef matrix
 
   free(arr);
