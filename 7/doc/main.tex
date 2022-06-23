@@ -202,7 +202,9 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 \subsection{实验环境和相关配置}
 
-实验在华为鲲鹏服务器平台完成，使用 cmake 构建项目，开启 O3 加速；
+实验在本地 x86 Arch Linux 环境下完成，使用 cmake 构建项目，开启 O3 加速；
+
+MPI库采用 OpenMPI，由于使用的 CPU 为 8C16T，所以足以应付最多 4 核心，每个进程 4 线程的负载。
 
 \subsection{默认平凡算法}
 
@@ -306,8 +308,59 @@ void func(int& ans, float arr[], int n) {
 
 \subsection{MPI 并行化算法结合 SIMD 指令优化}
 NEON或AVX优化作用于循环的CPU核心内并行化，由于O3级别的优化可能已经引入了SIMD，效果不一定明显。
-以下是NEON优化的代码
-\begin{lstlisting}[frame=trbl,language={C++}]
+\begin{lstlisting}[title=AVX优化,frame=trbl,language={C++}]
+#define matrix(i, j)  (arr[(i) * (n) + (j)])
+#define pmatrix(i, j) (arr + ((i) * (n) + (j)))
+#define prow(i)       (pmatrix(i, 0))
+
+void func(int& ans, float arr[], int n) {
+  int comm_sz;
+  int my_rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+  MPI_Bcast(arr, n * n, MPI_FLOAT, 0, MPI_COMM_WORLD);
+
+  int block_sz  = n / comm_sz;
+  int row_begin = block_sz * my_rank;
+  int row_end   = (my_rank + 1 == comm_sz ? n : row_begin + block_sz);
+
+  for (int k = 0; k < n; ++k) {
+    int j;
+    if (row_begin <= k && k < row_end) {
+      auto vt =
+        _mm256_set_ps(matrix(k, k), matrix(k, k), matrix(k, k), matrix(k, k),
+                      matrix(k, k), matrix(k, k), matrix(k, k), matrix(k, k));
+      for (j = k + 1; j + 8 <= n; j += 8) {
+        auto va = _mm256_loadu_ps(pmatrix(k, j));
+        va      = _mm256_div_ps(va, vt);
+        _mm256_storeu_ps(pmatrix(k, j), va);
+      }
+      for (; j < n; ++j) matrix(k, j) /= matrix(k, k);
+      matrix(k, k) = 1.0;
+    }
+    int bc_rank = comm_sz - 1;
+    if (block_sz && k / block_sz < bc_rank) bc_rank = k / block_sz;
+    MPI_Bcast(prow(k), n, MPI_FLOAT, bc_rank, MPI_COMM_WORLD);
+    for (int i = max(row_begin, k + 1); i < row_end; ++i) {
+      auto vaik =
+        _mm256_set_ps(matrix(i, k), matrix(i, k), matrix(i, k), matrix(i, k),
+                      matrix(i, k), matrix(i, k), matrix(i, k), matrix(i, k));
+      for (j = k + 1; j + 8 <= n; j += 8) {
+        auto vakj = _mm256_loadu_ps(pmatrix(k, j));
+        auto vaij = _mm256_loadu_ps(pmatrix(i, j));
+        auto vx   = _mm256_mul_ps(vakj, vaik);
+        vaij      = _mm256_sub_ps(vaij, vx);
+        _mm256_storeu_ps(pmatrix(i, j), vaij);
+      }
+      for (; j < n; ++j) matrix(i, j) -= matrix(i, k) * matrix(k, j);
+      matrix(i, k) = 0;
+    }
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[title=NEON优化,frame=trbl,language={C++}]
 #define matrix(i, j)  (arr[(i) * (n) + (j)])
 #define pmatrix(i, j) (arr + ((i) * (n) + (j)))
 #define prow(i)       (pmatrix(i, 0))
@@ -362,6 +415,77 @@ void func(int& ans, float arr[], int n) {
 加入OpenMP的算法计算部分时间复杂度可以继续除以线程数$T$，得到时间复杂度$O(\frac{n^3}{N \cdot T})$；对于 NEON 优化的算法，类似的除以向量长度常数。
 
 \subsection{运行时间分析}
+由于本人在华为鲲鹏服务器上的帐号出现异常，获取不到pbs系统的标准输出和标准错误重定向文件，即便显示指定输出路径也无效，所以只在本地 x86 环境实验。
+
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|ll|llll|}
+      \hline
+      Scale       & Reperat times & x86 ordinary (s) & x86 MPI 2 (s)  & x86 MPI 4 (s)  & x86 MPI 8 (s)  \\ \hline
+      8×8         & 100           & 0.000001330460   & 0.000003109250 & 0.000007227200 & 0.000011003490 \\ \hline
+      16 × 16     & 50            & 0.000001706920   & 0.000004909840 & 0.000011357620 & 0.000018678300 \\ \hline
+      32 × 32     & 50            & 0.000003640080   & 0.000009848960 & 0.000024183300 & 0.000037996420 \\ \hline
+      64 × 64     & 20            & 0.000015253300   & 0.000022858900 & 0.000050830400 & 0.000078725100 \\ \hline
+      128 × 128   & 15            & 0.000098880800   & 0.000099426133 & 0.000160350867 & 0.000224362867 \\ \hline
+      256 × 256   & 10            & 0.000716408500   & 0.000450790200 & 0.000536723300 & 0.000705872000 \\ \hline
+      512 × 512   & 10            & 0.006722607300   & 0.003132060100 & 0.002446903000 & 0.003516368600 \\ \hline
+      1024 × 1024 & 5             & 0.064893815400   & 0.032939996400 & 0.021467574400 & 0.017404530400 \\ \hline
+      2048 × 2048 & 3             & 1.400074583333   & 1.033122249667 & 0.851402086333 & 0.774419514333 \\ \hline
+      4096 × 4096 & 1             & 10.705585484000  & 8.511468985000 & 8.007275085000 & 7.703194050000 \\ \hline
+    \end{tabular}%
+  }
+  \caption{平凡算法和不同核心数 MPI 加速算法运行时间}
+  \label{tab:ord-mpi}
+\end{table}
+
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|ll|llll|}
+      \hline
+      Scale       & Reperat times & x86 ordinary (s) & x86 MPI AVX 2 (s) & x86 MPI AVX 4 (s) & x86 MPI AVX 8 (s) \\ \hline
+      8×8         & 100           & 0.000001330460   & 0.000002948670    & 0.000007216750    & 0.000011136140    \\ \hline
+      16 × 16     & 50            & 0.000001706920   & 0.000004758920    & 0.000012403820    & 0.000019389440    \\ \hline
+      32 × 32     & 50            & 0.000003640080   & 0.000009745640    & 0.000025260240    & 0.000038144480    \\ \hline
+      64 × 64     & 20            & 0.000015253300   & 0.000023498100    & 0.000051647500    & 0.000079584050    \\ \hline
+      128 × 128   & 15            & 0.000098880800   & 0.000097968467    & 0.000165770600    & 0.000224795867    \\ \hline
+      256 × 256   & 10            & 0.000716408500   & 0.000441564300    & 0.000561866000    & 0.000702323900    \\ \hline
+      512 × 512   & 10            & 0.006722607300   & 0.003193946400    & 0.002559661900    & 0.003394705300    \\ \hline
+      1024 × 1024 & 5             & 0.064893815400   & 0.027655931200    & 0.020635136600    & 0.017636375600    \\ \hline
+      2048 × 2048 & 3             & 1.400074583333   & 1.340856775000    & 0.865629919333    & 0.759849924667    \\ \hline
+      4096 × 4096 & 1             & 10.705585484000  & 11.593806475000   & 8.896995985000    & 8.144267148000    \\ \hline
+    \end{tabular}%
+  }
+  \caption{平凡算法和不同核心数 MPI 及 AVX 加速算法运行时间}
+  \label{tab:ord-mpi-avx}
+\end{table}
+
+\begin{table}[]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|ll|ll|}
+      \hline
+      Scale       & Reperat times & x86 ordinary (s) & x86 MPI OpenMP (s) \\ \hline
+      8×8         & 100           & 0.000001330460   & 0.000016614600     \\ \hline
+      16 × 16     & 50            & 0.000001706920   & 0.000031428600     \\ \hline
+      32 × 32     & 50            & 0.000003640080   & 0.000073612800     \\ \hline
+      64 × 64     & 20            & 0.000015253300   & 0.000124789050     \\ \hline
+      128 × 128   & 15            & 0.000098880800   & 0.000303953933     \\ \hline
+      256 × 256   & 10            & 0.000716408500   & 0.000936229300     \\ \hline
+      512 × 512   & 10            & 0.006722607300   & 0.002821468900     \\ \hline
+      1024 × 1024 & 5             & 0.064893815400   & 0.015939609600     \\ \hline
+      2048 × 2048 & 3             & 1.400074583333   & 0.676996145333     \\ \hline
+      4096 × 4096 & 1             & 10.705585484000  & 9.719432846000     \\ \hline
+    \end{tabular}%
+  }
+  \caption{平凡算法和 MPI 及 OpenMP 加速算法运行时间}
+  \label{tab:ord-mpi-omp}
+\end{table}
+
+其中单纯的MPI算法测试了 2、4、8 节点时的运行时间（表\ref{tab:ord-mpi}），矩阵越小重复测试数量越多。MPI加上AVX加速也测试了 2、4、8 节点时的运行时间（表\ref{tab:ord-mpi-avx}）。对于 MPI 加上 OpenMP 加速算法，由于本地环境 CPU 最多 16 线程，所以只测试了 4 节点，每节点 4 线程的运行时间（表\ref{tab:ord-mpi-omp}）。
+
+可以发现，不同加速策略均有一定程度的加速效果，在较大的矩阵中加速效果大于 0\%，且遵循并行度越高加速比越大的规律。但是可能是由于本地 CPU 环境不适用使用 MPI 非共享内存的多进程模型，所以加速效果不明显：相对 OpenMP 多线程模型而言，MPI 的通信开销非常大。
 
 % \newpage
 
