@@ -41,8 +41,7 @@ void func(int& ans, float arr[], int n) {
     if (omp_get_thread_num() == 0)
       MPI_Bcast(prow(k), n, MPI_FLOAT, bc_rank, MPI_COMM_WORLD);
 #pragma omp for
-    for (i = row_begin; i < row_end; ++i) {
-      if (i <= k) continue;
+    for (i = max(row_begin, k + 1); i < row_end; ++i) {
       for (j = k + 1; j < n; ++j) matrix(i, j) -= matrix(i, k) * matrix(k, j);
       matrix(i, k) = 0;
     }
