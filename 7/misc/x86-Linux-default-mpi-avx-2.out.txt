@@ -1,0 +1,10 @@
+file: 1024.in repeat: 5 avg-time: 0.027655931200 s
+file: 128.in repeat: 15 avg-time: 0.000097968467 s
+file: 16.in repeat: 50 avg-time: 0.000004758920 s
+file: 2048.in repeat: 3 avg-time: 1.340856775000 s
+file: 256.in repeat: 10 avg-time: 0.000441564300 s
+file: 32.in repeat: 50 avg-time: 0.000009745640 s
+file: 4096.in repeat: 1 avg-time: 11.593806475000 s
+file: 512.in repeat: 10 avg-time: 0.003193946400 s
+file: 64.in repeat: 20 avg-time: 0.000023498100 s
+file: 8.in repeat: 100 avg-time: 0.000002948670 s
