@@ -6,7 +6,7 @@
 #include "solve.hh"
 using namespace std;
 
-#define OMP_NUM_THREADS 4
+#define THREADS 4
 
 #define matrix(i, j)  (arr[(i) * (n) + (j)])
 #define pmatrix(i, j) (arr + ((i) * (n) + (j)))
@@ -27,8 +27,7 @@ void func(int& ans, float arr[], int n) {
   int   i, j, k;
   int   bc_rank;
   float tmp;
-#pragma omp parallel num_threads(OMP_NUM_THREADS), \
-  private(i, j, k, tmp, bc_rank, block_sz, n)
+#pragma omp parallel num_threads(THREADS), private(i, j, k, tmp, bc_rank)
   for (k = 0; k < n; ++k) {
     if (row_begin <= k && k < row_end) {
       tmp = matrix(k, k);
@@ -38,7 +37,9 @@ void func(int& ans, float arr[], int n) {
     }
     bc_rank = comm_sz - 1;
     if (block_sz && k / block_sz < bc_rank) bc_rank = k / block_sz;
-    MPI_Bcast(prow(k), n, MPI_FLOAT, bc_rank, MPI_COMM_WORLD);
+#pragma omp barrier
+    if (omp_get_thread_num() == 0)
+      MPI_Bcast(prow(k), n, MPI_FLOAT, bc_rank, MPI_COMM_WORLD);
 #pragma omp for
     for (i = row_begin; i < row_end; ++i) {
       if (i <= k) continue;

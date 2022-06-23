@@ -5,6 +5,8 @@ using namespace std;
 
 signed _main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
+  // int thread_type;
+  // MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &thread_type);
   int comm_sz;
   int my_rank;
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
