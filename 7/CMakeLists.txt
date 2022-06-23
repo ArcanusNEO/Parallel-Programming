@@ -30,6 +30,9 @@ target_link_libraries(ordinary PRIVATE main solve)
 add_executable(mpi src/mpi.cc)
 target_link_libraries(mpi PRIVATE mpi-main mpi-solve)
 
+add_executable(mpi-neon src/mpi-neon.cc)
+target_link_libraries(mpi-neon PRIVATE mpi-main mpi-solve)
+
 add_executable(mpi-openmp src/mpi-openmp.cc)
 target_link_libraries(mpi-openmp PRIVATE mpi-main mpi-solve)
 
@@ -40,6 +43,7 @@ target_link_libraries(mpi-slow PRIVATE mpi-main mpi-solve)
 find_package(MPI REQUIRED)
 # add_definitions(-DOMPI_SKIP_MPICXX)
 target_link_libraries(mpi PRIVATE MPI::MPI_CXX)
+target_link_libraries(mpi-neon PRIVATE MPI::MPI_CXX)
 target_link_libraries(mpi-openmp PRIVATE MPI::MPI_CXX)
 target_link_libraries(mpi-slow PRIVATE MPI::MPI_CXX)
 
