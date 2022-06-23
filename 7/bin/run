@@ -1,3 +1,4 @@
 #!/bin/sh
 build/bin/ordinary conf/in.conf &>misc/x86-Linux-default-ordinary.out.txt
 mpiexec -n 8 build/bin/mpi conf/in.conf &>misc/x86-Linux-default-mpi.out.txt
+mpiexec -n 4 build/bin/mpi-openmp conf/in.conf &>misc/x86-Linux-default-mpi-openmp.out.txt
