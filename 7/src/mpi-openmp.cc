@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <mpi.h>
+#include <omp.h>
 
 #include "main.hh"
 #include "solve.hh"
@@ -27,10 +28,10 @@ void func(int& ans, float arr[], int n) {
   int   bc_rank;
   float tmp;
 #pragma omp parallel num_threads(OMP_NUM_THREADS), \
-  private(i, j, k, tmp, bc_rank, block_sz)
+  private(i, j, k, tmp, bc_rank, block_sz, n)
   for (k = 0; k < n; ++k) {
-    tmp = matrix(k, k);
     if (row_begin <= k && k < row_end) {
+      tmp = matrix(k, k);
 #pragma omp for
       for (j = k + 1; j < n; ++j) matrix(k, j) /= tmp;
       matrix(k, k) = 1.0;
