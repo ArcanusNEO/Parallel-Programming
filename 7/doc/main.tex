@@ -202,9 +202,7 @@ rulesepcolor= \color{ red!20!green!20!blue!20}
 
 \subsection{实验环境和相关配置}
 
-实验在本地 Arch Linux x86\_64 平台和华为鲲鹏服务器平台完成，使用 cmake 构建项目，均开启 O3 加速；
-
-对于本地的 x86 环境，安装了 OpenMPI 库，使用的 CPU 是 8 核心 16 线程，足以应付 4 核 MPI 并行和 4 线程 OpenMP 叠加。
+实验在华为鲲鹏服务器平台完成，使用 cmake 构建项目，开启 O3 加速；
 
 \subsection{默认平凡算法}
 
@@ -306,8 +304,9 @@ void func(int& ans, float arr[], int n) {
 }
 \end{lstlisting}
 
-\subsection{MPI 并行化算法结合 NEON 指令优化}
-NEON优化作用于循环的CPU核心内并行化，由于O3级别的优化可能已经引入了SIMD，效果不一定明显。
+\subsection{MPI 并行化算法结合 SIMD 指令优化}
+NEON或AVX优化作用于循环的CPU核心内并行化，由于O3级别的优化可能已经引入了SIMD，效果不一定明显。
+以下是NEON优化的代码
 \begin{lstlisting}[frame=trbl,language={C++}]
 #define matrix(i, j)  (arr[(i) * (n) + (j)])
 #define pmatrix(i, j) (arr + ((i) * (n) + (j)))
