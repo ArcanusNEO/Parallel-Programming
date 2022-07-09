@@ -1,16 +1,20 @@
+CC = gcc
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -O2 -Iinc
 OBJ = constant.o
-INC = matrix.hh
+INC = 
 
 vpath %.hh inc
 vpath %.cc src
 
 .PHONY: all
-all: simple
+all: list
 
-simple: $(OBJ) $(INC) simple.cc
-	$(CXX) $(CXXFLAGS) -o simple $(OBJ) $$(find -name 'simple.cc')
+list: $(OBJ) $(INC) list_matrix.o list.cc
+	$(CXX) $(CXXFLAGS) -o list $(OBJ) list_matrix.o $$(find -name 'list.cc')
+
+list_matrix.o: list_matrix.hh list_matrix.cc
+	$(CXX) $(CXXFLAGS) -c $$(find -name 'list_matrix.cc')
 
 constant.o: constant.hh constant.cc
 	$(CXX) $(CXXFLAGS) -c $$(find -name 'constant.cc')
