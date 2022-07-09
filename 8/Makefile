@@ -1,6 +1,6 @@
 CC = gcc
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -O2 -Iinc
+CXXFLAGS = -Wall -Wextra -std=c++17 -Ofast -Iinc
 OBJ = constant.o
 INC = 
 
