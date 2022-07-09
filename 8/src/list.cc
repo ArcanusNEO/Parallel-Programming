@@ -30,7 +30,7 @@ signed main(int argc, char* argv[]) {
   if (argc < 2) exit(EXIT_FAILURE);
   ios_base::sync_with_stdio(false);
   cin.tie(nullptr), cout.tie(nullptr);
-  for (size_t i = 1; i <= 3; ++i) {
+  for (size_t i = 1; i <= cases; ++i) {
     list_matrix_t m;
     m.read(argv[1], i);
     auto t1 = chrono::high_resolution_clock::now();
